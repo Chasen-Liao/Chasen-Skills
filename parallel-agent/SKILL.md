@@ -31,7 +31,7 @@ Choose the narrowest builtin role for each lane:
 | Approved implementation | `worker` |
 | Small generic delegation | `delegate` |
 
-Use `context: "fresh"` for independent lanes. Use `context: "fork"` only when the child must inherit the parent session's decisions or history, typically for an oracle consultation. An explicit fork requires a persisted parent session and current leaf; forked context is a branched history, not a filtered fresh context. If those prerequisites are unavailable, use `fresh`.
+Use `context: "fresh"` for independent lanes. Use `context: "fork"` only when the child must inherit the parent session's decisions or history, typically for an oracle consultation. An explicit fork requires a persisted parent session and current leaf; forked context is a branched session, not a filtered fresh context, although runtime filtering removes parent-only orchestration artifacts. If those prerequisites are unavailable, use `fresh`.
 
 ## Parent orchestration rules
 
@@ -57,7 +57,7 @@ parallel read-only planning or reconnaissance
     -> parallel read-only review and validation
 ```
 
-Use isolated worktrees whenever concurrent mutation or repository isolation is required, with a non-overlapping authority boundary for every lane. Do not let a child silently decide product scope, architecture, release, merge, publication, or other authority-sensitive questions.
+Use isolated worktrees whenever concurrent mutation or repository isolation is required, with a non-overlapping authority boundary for every lane. Set `worktree: true` on a child lane, or `isolation: "worktree"` on the workflow when managed worktree isolation is appropriate. Do not let a child silently decide product scope, architecture, release, merge, publication, or other authority-sensitive questions.
 
 ## Child task contract
 
