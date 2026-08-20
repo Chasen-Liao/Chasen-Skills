@@ -31,10 +31,11 @@ Choose the narrowest builtin role for each lane:
 | Approved implementation | `worker` |
 | Small generic delegation | `delegate` |
 
-Use `context: "fresh"` for independent lanes. Use `context: "fork"` only when the child must inherit the parent session's decisions or history, typically for an oracle consultation.
+Use `context: "fresh"` for independent lanes. Use `context: "fork"` only when the child must inherit the parent session's decisions or history, typically for an oracle consultation. An explicit fork requires a persisted parent session and current leaf; forked context is a branched history, not a filtered fresh context. If those prerequisites are unavailable, use `fresh`.
 
 ## Parent orchestration rules
 
+- Before dispatching, run `subagent({ action: "list" })` and use only executable, non-disabled agents.
 - Launch coordinated work through `workflowScript`.
 - Use `runs.all([...])` for parallel lanes and `runs.run(key, {...})` for one lane or a dependent sequential step.
 - Prefer `async: true` for the overall workflow; do not block merely because a task is short.
@@ -45,24 +46,25 @@ Use `context: "fresh"` for independent lanes. Use `context: "fork"` only when th
 
 ## Write safety
 
-Never launch multiple mutation-capable workers into the same active worktree.
+Never launch multiple mutation-capable workers into the same active worktree. A lane that can mutate state must have one writer for its `repo/cwd`; concurrent mutation requires separate worktrees and explicit isolation. Read-only lanes may share a checkout only when they cannot change state or create generated files.
 
 For implementation work, use this default sequence:
 
 ```text
 parallel read-only planning or reconnaissance
-    -> one worker applies approved changes
+    -> parent synthesizes and explicitly approves an accepted scope
+    -> one worker applies only that accepted scope
     -> parallel read-only review and validation
 ```
 
-Use isolated worktrees only when multiple writers are explicitly required and each lane has a non-overlapping authority boundary. Do not let a child silently decide product scope, architecture, release, merge, publication, or other authority-sensitive questions.
+Use isolated worktrees whenever concurrent mutation or repository isolation is required, with a non-overlapping authority boundary for every lane. Do not let a child silently decide product scope, architecture, release, merge, publication, or other authority-sensitive questions.
 
 ## Child task contract
 
 Give every child a compact, self-contained contract:
 
 - **Goal** — the concrete result required;
-- **Target** — repository, cwd, files, symbols, diff, or source seam;
+- **Target** — explicit repository and `cwd`, plus files, symbols, diff, or source seam;
 - **Authority** — read-only or allowed edits; no commit, push, merge, release, or publication unless explicitly approved;
 - **Context** — relevant evidence and approved decisions;
 - **Success** — what must be true before stopping;
@@ -86,21 +88,24 @@ For large reports, use a distinct durable `output` path with `outputMode: "file-
 
 ### 1. Parallel reconnaissance or review
 
-Use distinct roles and distinct questions:
+Use distinct roles and distinct questions. For a repository outside the parent checkout, pass its explicit `cwd` on every lane and name the repository in the task:
 
 ```typescript
 subagent({
   workflowScript: `
+    const repoCwd = "C:/path/to/repository";
     const results = await runs.all([
       {
         key: "correctness",
         agent: "reviewer",
+        cwd: repoCwd,
         context: "fresh",
         task: "Review the current diff for correctness and regressions. Do not edit files. Return status, findings, changedFiles, validation, and remainingRisks."
       },
       {
         key: "tests",
         agent: "reviewer",
+        cwd: repoCwd,
         context: "fresh",
         task: "Review the current diff against the validation contract and identify missing tests or checks. Do not edit files. Return status, findings, changedFiles, validation, and remainingRisks."
       }
@@ -119,9 +124,10 @@ Use `scout` for repository facts and `researcher` for external evidence. Keep th
 ```typescript
 subagent({
   workflowScript: `
+    const repoCwd = "C:/path/to/repository";
     const results = await runs.all([
-      { key: "local", agent: "scout", context: "fresh", task: "Inspect the named repository files and return relevant code paths and constraints." },
-      { key: "external", agent: "researcher", context: "fresh", task: "Find high-trust current sources for the named API or behavior and return links, evidence, and gaps." }
+      { key: "local", agent: "scout", cwd: repoCwd, context: "fresh", task: "Inspect this repository and return relevant code paths and constraints." },
+      { key: "external", agent: "researcher", cwd: repoCwd, context: "fresh", task: "Find high-trust current sources for the named API or behavior and return links, evidence, and gaps." }
     ]);
     return results.map(result => result.output);
   `,
@@ -132,52 +138,82 @@ subagent({
 
 ### 3. Staged implementation
 
-Use this when independent findings will eventually affect one worktree. Planning and validation fan out; writing stays single-threaded:
+Use this when independent findings will eventually affect one worktree. Planning and validation fan out; writing stays single-threaded. **Stop after the planning stage**: the parent must inspect statuses, synthesize the findings, and provide an explicit `acceptedScope` before launching the worker. Never pass raw planning output to a worker as approval.
+
+Planning stage:
 
 ```typescript
 subagent({
   workflowScript: `
+    const repoCwd = "C:/path/to/repository";
     const plans = await runs.all([
       {
         key: "domain-a",
         agent: "reviewer",
+        cwd: repoCwd,
         context: "fresh",
         task: "Inspect the current diff for domain A. Do not edit. Propose only in-scope fixes with file references and focused validation."
       },
       {
         key: "domain-b",
         agent: "reviewer",
+        cwd: repoCwd,
         context: "fresh",
         task: "Inspect the current diff for domain B. Do not edit. Propose only in-scope fixes with file references and focused validation."
       }
     ]);
 
+    return plans.map(result => result.output);
+  `,
+  context: "fresh",
+  async: true
+})
+```
+
+After the parent has reviewed those results, it launches a separate implementation stage with an explicit accepted scope:
+
+```typescript
+subagent({
+  workflowScript: `
+    const repoCwd = "C:/path/to/repository";
+    const acceptedScope = "Parent-approved fixes only: ...";
     const worker = await runs.run("implementation", {
       agent: "worker",
+      cwd: repoCwd,
       context: "fresh",
-      task: "Apply only the accepted fixes from these planning results. You are the sole writer for the active worktree. Run focused validation and return status, findings, changedFiles, validation, and remainingRisks.\n\nPlanning results:\n" + plans.map(result => result.output).join("\n\n")
+      task: "Apply only this parent-approved accepted scope: " + acceptedScope + ". You are the sole writer for the named repository and cwd. Do not infer additional fixes. Run focused validation and return status, findings, changedFiles, validation, and remainingRisks."
     });
+    return worker.output;
+  `,
+  context: "fresh",
+  async: true
+})
+```
 
+Then, after the worker completes, launch a separate read-only validation stage:
+
+```typescript
+subagent({
+  workflowScript: `
+    const repoCwd = "C:/path/to/repository";
     const validation = await runs.all([
       {
         key: "post-correctness",
         agent: "reviewer",
+        cwd: repoCwd,
         context: "fresh",
         task: "Validate the post-worker diff for correctness and regressions. Do not edit. Return status, findings, changedFiles, validation, and remainingRisks."
       },
       {
         key: "post-tests",
         agent: "reviewer",
+        cwd: repoCwd,
         context: "fresh",
         task: "Validate the post-worker diff and focused tests against the accepted scope. Do not edit. Return status, findings, changedFiles, validation, and remainingRisks."
       }
     ]);
 
-    return {
-      plans: plans.map(result => result.output),
-      worker: worker.output,
-      validation: validation.map(result => result.output)
-    };
+    return validation.map(result => result.output);
   `,
   context: "fresh",
   async: true
