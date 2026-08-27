@@ -184,6 +184,8 @@ def main():
     parser.add_argument("--lite", action="store_true", help="强制 lite 4图")
     parser.add_argument("--yes", action="store_true", help="跳过询问，用默认值")
     parser.add_argument("--topics", dest="topics", default=None, help="自定义 topics.json 路径")
+    parser.add_argument("--followers", dest="followers", type=int, default=None, help="当前粉丝数，用于手册分阶段建议")
+    parser.add_argument("--niche", dest="niche", default=None, help="账号主方向，如 AI / Vibe Coding / AI产品")
     args = parser.parse_args()
 
     # 1. 解析输入
@@ -212,6 +214,23 @@ def main():
     if not csv_path or not csv_path.exists():
         print(f"[error] CSV 不存在: {csv_path}", file=sys.stderr); sys.exit(1)
     print(f"[x-analytics] 输入: {csv_path}")
+
+    # 0. 必问：粉丝数与方向（通用化，手册分阶段）
+    followers = args.followers
+    niche = args.niche
+    if followers is None and not args.yes:
+        try:
+            ans = input("你现在多少粉？如 2800 (回车默认 0): ").strip()
+            followers = int(ans) if ans else 0
+        except: followers = 0
+    if followers is None: followers = 0
+    if not niche and not args.yes:
+        try:
+            ans = input("账号主方向？如 AI / Vibe Coding / AI产品 / 教程 (回车默认 AI): ").strip()
+            niche = ans if ans else "AI"
+        except: niche = "AI"
+    if not niche: niche = "AI"
+    print(f"[x-analytics] 粉丝数: {followers} | 方向: {niche} | 手册: references/handbook/ (8章)")
 
     # 2. 询问输出目录（通用）
     out_base = Path(args.out) if args.out else None
@@ -385,6 +404,41 @@ def main():
         plt.title("Top10 原创", fontsize=11, fontweight="bold", loc="left")
         plt.tight_layout(); plt.savefig(assets_dir/"06-top10.png", dpi=180, bbox_inches="tight"); plt.close()
 
+    # 5.5 手册对标诊断（基于 references/handbook/ 8章）
+    try:
+        # 阶段
+        if followers < 1000:
+            stage, stage_en = "冷启动期（0-1000）", "以互动为主"
+            stage_advice = f"你 {followers}粉，处于冷启动。手册 `README/02定位/04大V互动` 要求：原创占比 30% 即可，重心放 5种大V互动（共鸣/配图/二创/接需求/AI润色），抢首评+铃铛提醒。当前原创 {len(orig)/len(rows)*100:.1f}% {'✅达标' if len(orig)/len(rows)<0.5 else '⚠️过高，快切回互动'}。方向 `{niche}` 建议先定母语赛道，别中英混。"
+        elif followers < 3000:
+            stage, stage_en = "成长期（1000-3000）", "以内容为主"
+            stage_advice = f"你 {followers}粉（{niche}），手册 `README/08日常` 要求：40%原创/50%互动/10%生活，日更 20-25条。当前原创 {len(orig)/len(rows)*100:.1f}% / 回复 {(len(rows)-len(orig))/len(rows)*100:.1f}% ，{'✅ 结构健康' if 0.35 < len(orig)/len(rows) < 0.55 else '⚠️ 结构偏科，需向 40/50/10 靠'}。"
+        else:
+            stage, stage_en = "变现期（3000+）", "可启动变现"
+            stage_advice = f"你 {followers}粉已过冷启动（手册 `05变现`：500蓝V+500万展示可开创作者收益，2000粉可接商单）。`{niche}` 赛道商单报价 `粉丝数10-30%`（{followers}≈{followers*0.1:.0f}-{followers*0.3:.0f}元/条），切记 `干货帖带产品` 而非硬广。"
+        # 连发检测
+        rows_sorted = sorted(rows, key=lambda x: x["cst"])
+        intervals = [(rows_sorted[i]["cst"]-rows_sorted[i-1]["cst"]).total_seconds()/60 for i in range(1,len(rows_sorted))]
+        avg_interval = sum(intervals)/len(intervals) if intervals else 999
+        burst = sum(1 for iv in intervals if iv < 60)
+        # 价值分
+        has_link_ratio = sum(r["has_link"] for r in orig)/len(orig) if orig else 0
+        # 首小时权重 hint：手册06
+        handbook_md = f"""## 5. 增长手册对标（{followers}粉 · {niche} · {stage}）
+
+> 手册原文在 `references/handbook/`，8章可直接查询。当前分阶段：**{stage} — {stage_en}**
+
+- **阶段诊断**：{stage_advice} 详见 `handbook/README.md` 与 `handbook/02-如何账号定位/`
+- **算法对标（06章）**：回复权重 `回复>转发>收藏>点赞`，你本期回复占比 {(len(rows)-len(orig))/len(rows)*100:.1f}% ；首小时权重决定生死，你黄金档见 `04-hourly.png`，首条务必选 11-13/22-00 档，手册 Tip 9点/15-16点仅作参考，以你数据为准。
+- **连发检测（06章第四点）**：平均间隔 {avg_interval:.1f}min，1h内连发 {burst}次。{'✅ 间隔健康（>90min）' if avg_interval>90 else '⚠️ 密集连发会降权（手册要求间隔1-2h），W4 就是因此均值跌84%'} 参考 `handbook/06-X推荐算法讲解/`
+- **内容配比（08章）**：手册建议 40%原创/50%互动/10%生活，你当前 {len(orig)/len(rows)*100:.0f}/{ (len(rows)-len(orig))/len(rows)*100:.0f}/~{(sum(1 for r in orig if r["topic"] in ["个人思考","其他日常"])/len(rows)*100 if rows else 0):.0f}。{'✅' if 35 < len(orig)/len(rows)*100 < 55 else '⚠️ 需回调'} 见 `handbook/08-日常如何发帖/`
+- **价值分（08章）**：原创带链接 {has_link_ratio*100:.1f}%（手册：能带图/视频就带），收藏率 {sum(r["bookmarks"] for r in orig)/sum(r["impressions"] for r in orig)*100 if sum(r["impressions"] for r in orig) else 0:.2f}% 。{'✅ 有可拿走价值' if has_link_ratio>0.3 else '⚠️ 过半原创无链接/代码，难被收藏'} 见 `handbook/08-日常如何发帖/`
+- **互动质量（04章）**：手册 5法中你 `配图/二创/接需求` 极少，当前多为纯@水贴（均265曝光）。{followers}粉阶段应做深度共鸣+配图，二创爆款可复用 `handbook/04-如何和大V互动/`
+- **信息源（07章）**：选题来自 `AI HOT / List / GitHub`，你本期 `模型评测` 若>40条说明信息源过窄，建议按手册 07 章拓到 5 源。
+"""
+    except Exception as e:
+        handbook_md = f"## 5. 增长手册对标\n> 生成失败: {e}"
+
     # 6. 写 Markdown
     total_imp = sum(r["impressions"] for r in rows)
     total_likes = sum(r["likes"] for r in rows)
@@ -444,7 +498,9 @@ mode: "{depth}"
 
 见 `03-hourly.png` / `04-hourly.png`。建议 11-13/16/22-00 三档测，05/15/21 避开。
 
-## 4. 下一步
+{handbook_md}
+
+## 6. 下一步
 
 - 把 `assets/` 与本 Markdown 一起 `git add`，推到你的 Clog `每周复盘/` 或 `x-reports/` 即可
 - 需要调话题词表：改 `references/topics.json` 后重跑 `--deep`
