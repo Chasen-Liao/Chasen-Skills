@@ -1,0 +1,12 @@
+{
+  "Pi/Harness": ["pi", "harness", "思考球", "桌面端"],
+  "Codex/额度": ["codex", "tibo", "额度", "限流", "重置"],
+  "Gemini/Flash": ["gemini", "哈基米", "串稀"],
+  "OxAlpha/牛来": ["ox alpha", "牛来", "mimo", "匿名模型"],
+  "Agent/Apodex": ["apodex", "agent team", "多智能体", "deep discover"],
+  "DeepSeek": ["deepseek"],
+  "DeepSeek/Flash": ["deepseek flash", "deepseek-v4", "deepseek v4"],
+  "Kimi/K3": ["kimi", "k3"],
+  "Cherry": ["cherry"],
+  "Tutti/Dethink": ["tutti", "dethink"]
+}
