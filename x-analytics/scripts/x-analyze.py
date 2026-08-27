@@ -16,7 +16,7 @@ TW_EPOCH = 1288834974657
 CST = timezone(timedelta(hours=8))
 
 ALIASES = {
-    "post_id": ["post id","post_id","tweet id","tweet_id","post id "],
+    "post_id": ["post id","post_id","tweet id","tweet_id"],
     "date": ["date","日期"],
     "post_text": ["post text","text","tweet text","内容","post_text"],
     "post_link": ["post link","permalink","url","link","post_link"],
@@ -35,15 +35,39 @@ ALIASES = {
     "permalink_clicks": ["permalink clicks","permalink_clicks"],
 }
 
-DEFAULT_TOPICS = {
-    "模型评测与发布": ["gpt","claude","gemini","deepseek","kimi","qwen","grok","llama","模型","发布","新模型","评测","benchmark","跑分","sota","mimo","ox alpha","牛来"],
-    "Agent与工作流": ["agent","工作流","workflow","多智能体","harness","自动化","多步","mcp","subagent","任务拆解","deep discover"],
-    "Vibe Coding与开发者工具": ["code","编程","vibe coding","cursor","copilot","codex","opencode","pi","ide","cli","tool","开发者工具"],
-    "AI产品与变现": ["产品","商业化","变现","创业","saas","成本","token","api","定价","tutti","dethink","商单","增长"],
-    "教程与实战": ["教程","实战","手把手","可复现","复现","skill","prompt","指南","踩坑","step"],
-    "行业观察": ["行业","趋势","前沿","资讯","新闻","观察","解读","报告","动态","热点"],
-    "个人思考": ["思考","观点","感悟","成长","总结","随想","随笔","心得","认知"],
-}
+def _load_json_topics(path: Path):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"[warn] 话题词表加载失败 {path}: {e}", file=sys.stderr)
+        return None
+
+def load_topics_cfg(args, niche: str):
+    # 1. --topics 最高优先
+    if args.topics and Path(args.topics).exists():
+        cfg = _load_json_topics(Path(args.topics))
+        if cfg:
+            print(f"[x-analytics] 使用自定义 topics: {args.topics}")
+            return cfg
+    # 2. 按 niche 自动选预设（AI vs 通用）
+    is_ai = False
+    if niche:
+        low = niche.lower()
+        is_ai = any(k in low for k in ["ai","agent","vibe","code","模型","编程","大模型"])
+    base = Path(__file__).parent.parent / "references"
+    ai_path = base / "topics.json"
+    generic_path = base / "topics.generic.json"
+    chosen = ai_path if is_ai else generic_path
+    # fallback: 通用不存在则用 AI，AI不存在则用通用
+    if not chosen.exists():
+        chosen = generic_path if chosen == ai_path else ai_path
+    cfg = _load_json_topics(chosen) if chosen.exists() else None
+    if cfg:
+        print(f"[x-analytics] 话题预设: {chosen.name} (niche={niche} is_ai={is_ai})")
+        return cfg
+    # 3. 极简兜底
+    print("[warn] 无可用 topics.json，使用极简兜底", file=sys.stderr)
+    return {"其他": []}
 
 def norm_key(k): return k.strip().lower().replace("_"," ").strip()
 
@@ -72,20 +96,24 @@ def snowflake_to_cst(pid_str):
         return None
 
 def classify(text, topics_cfg):
+    if not text:
+        return "其他"
     tt = text.lower()
+    # 特殊：DeepSeek+Flash 需同时出现
+    if "deepseek" in tt and "flash" in tt:
+        return "DeepSeek/Flash"
     for topic, kws in topics_cfg.items():
         for kw in kws:
             if kw.lower() in tt or kw in text:
-                # DeepSeek/Flash special: need both
-                if topic == "DeepSeek" and "flash" in tt:
-                    continue
                 return topic
-    # DeepSeek/Flash fallback
-    if "deepseek" in tt and "flash" in tt:
-        return "DeepSeek/Flash"
     if text.lstrip().startswith("@"):
         return "纯回复"
-    return "其他日常"
+    # 兼容 AI 预设的“其他日常”与通用预设的“其他”
+    if "其他日常" in topics_cfg:
+        return "其他日常"
+    if "其他" in topics_cfg:
+        return "其他"
+    return list(topics_cfg.keys())[-1] if topics_cfg else "其他"
 
 def ensure_mpl():
     try:
@@ -141,6 +169,16 @@ def load_csv(path: Path):
                 urls = int(str(get("url_clicks","0")).replace(",","").strip() or 0)
                 link = raw[alias["post_link"]] if alias.get("post_link") else ""
                 cst = snowflake_to_cst(pid) if pid else None
+                # 校验 Snowflake 与 Date 列偏差（csv-aliases.md 要求 ≤1天）
+                if cst and alias.get("date"):
+                    try:
+                        date_raw_chk = raw[alias["date"]]
+                        if date_raw_chk and date_raw_chk.strip():
+                            dt_chk = datetime.strptime(date_raw_chk.strip().strip('"'), "%a, %b %d, %Y")
+                            if abs((cst.date() - dt_chk.date()).days) > 1:
+                                print(f"[warn] 第{i}行 Snowflake {cst.date()} 与 Date列 {dt_chk.date()} 偏差>1天", file=sys.stderr)
+                    except Exception:
+                        pass
                 # fallback date parsing if snowflake fails
                 if not cst:
                     # try Date column
@@ -249,17 +287,8 @@ def main():
     rows = load_csv(csv_path)
     if not rows:
         print("[error] 无有效数据", file=sys.stderr); sys.exit(1)
-    # topics 配置
-    topics_cfg = DEFAULT_TOPICS
-    if args.topics and Path(args.topics).exists():
-        try:
-            topics_cfg = json.loads(Path(args.topics).read_text(encoding="utf-8"))
-            print(f"[x-analytics] 使用自定义 topics: {args.topics}")
-        except: pass
-    elif (Path(__file__).parent.parent / "references" / "topics.json").exists():
-        try:
-            topics_cfg = json.loads((Path(__file__).parent.parent / "references" / "topics.json").read_text(encoding="utf-8"))
-        except: pass
+    # topics 配置（双预设：AI vs 通用，--topics 最高优先）
+    topics_cfg = load_topics_cfg(args, niche)
 
     for r in rows:
         r["topic"] = classify(r["post_text"], topics_cfg)

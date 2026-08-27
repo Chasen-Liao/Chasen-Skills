@@ -1,51 +1,52 @@
 ---
 name: x-analytics
-description: Use when 用户上传 X/Twitter CSV 或说“分析X数据 / 推文复盘 / x-analytics” — 丢数据给 AI，按规则脚本深度分析并给出做号建议。
+description: Use when 用户想复盘任意 X/Twitter 账号 — 丢 Content Analytics CSV，按 Snowflake 还原时间做话题/时段/漏斗分析，并结合《X增长手册》给做号建议
 license: MIT
-compatibility: Requires Python 3.10+ with matplotlib. Writes report to ./x-reports/ by default.
+compatibility: Requires Python 3.10+ with matplotlib
 metadata:
   author: Chasen-Liao
-  version: "0.2.0"
+  version: "0.3.1"
   category: data-analysis
 ---
 
 # X Analytics
 
-> 把 `account_analytics_content_*.csv` 丢给 AI → 按写好的规则和脚本自动分析 → 给出黄金时段、发文节奏、话题等做号建议（建议来自 `references/handbook/` 8章）。
+> 丢个 `account_analytics_content_*.csv` 给 AI → 自动出报告 `YYYY-MM-DD_YYYY-MM-DD-深度挖掘.md + assets/*.png`，含数据分析 + 手册对标的做号建议。
 
 ## When to use
 
-- 用户说“分析X数据 / 复盘推文 / x-analytics”或直接给出 CSV 路径
-- 想要黄金发布时间、日更节奏、话题 ROI、漏斗、藏在数据里的做号建议
+- 用户说 `分析X数据 / 复盘推文 / 看看账号 / 黄金时段 / 话题ROI` 或直接丢 CSV 路径
+- 想要一份**数据分析 + 账号建议**的报告（不对口瞎写，只基于 CSV 和 `handbook/`）
 
-## How to use (通用)
+## How to use
 
-1. **丢数据**：把 CSV 路径给 AI（或拖入）。支持 `Post id` Snowflake 自动还原小时，无需手动填时间。
-2. **AI 跑脚本**：`python scripts/x-analyze.py <csv> --out ./x-reports --followers <n> --niche <方向>`。未给 `followers/niche` 时先问一句（默认 0粉/AI），`--yes` 跳过。
-3. **看报告**：`<out>/YYYY-MM-DD_YYYY-MM-DD-深度挖掘.md + assets/*.png`，含 4-6 张图与一节 `增长手册对标`，直接可发或入 Obsidian。
-
-话题、指标、列名容错分别见 `references/topics.json` / `metrics.md` / `csv-aliases.md`，手册原文在 `references/handbook/` 可直接查询。
-
-## Run
+1. **拿数据**：用用户给的 CSV 路径；没给就找最新的 `*.csv`
+2. **跑脚本**：`python scripts/x-analyze.py <csv> --out <目录> --followers <粉> --niche <赛道> --yes`
+   - `--followers` 不给就问一句（默认 0），`--niche` 不给就自动识别赛道
+   - `--topics` 可传自定义词表，`--lite/--deep` 可强制模式
+3. **看报告**：检查 `<out>/YYYY-MM-DD_YYYY-MM-DD-*/.md` 和 `assets/*.png` 是否生成，用报告里的总览/话题/漏斗/手册对标四段做总结
 
 ```bash
-/x-analytics ./account_analytics_content_2026-08-21_2026-08-27.csv --out ./x-reports --followers 2800 --niche AI
+python scripts/x-analyze.py "./account_analytics_content_2026-08-21_2026-08-27.csv" --out ./x-reports --followers 2800 --niche AI --yes
 python scripts/x-analyze.py "./xxx.csv" --out ./x-reports --yes
 ```
 
-首次缺 `matplotlib` 会自动 `uv/pip install`。
-
 ## Output
 
-- Markdown + 4图(lite<100条) / 6图(deep≥100条)：日趋势、话题、小时、漏斗，deep 加字数散点与 Top10
-- 末尾按粉丝阶段（0-1000互动 / 1000-3000内容 / 3000+变现）与手册 06算法/08日常给出可执行清单，引 `handbook/` 原文路径
+- Markdown + 图表：周期、总量/均值、话题 ROI、黄金时段、漏斗、Top10（数据量大时自动加周对比/字数等）
+- 末尾有《X增长手册》对标建议，按粉丝阶段给可执行清单，并标注引用的 `handbook/` 章节
+
+想改输出样式？直接参考 `D:/Com-Sci-Tech/Obsidian/Clog/每周复盘/2026-07-31_2026-08-27-深度挖掘.md` 的版式，脚本生成的 Markdown 可在此基础上微调。
 
 ## References
 
-- `handbook/` — 克隆自 `https://github.com/bozhouDev/x-growth-handbook`（8章，可直接查询，`git pull` 可更新）
-- `topics.json` — 通用 8类（模型/Agent/Vibe Coding/产品/教程/行业/思考/其他）
+- `references/skeleton.md` — 报告骨架（标准6段，自动识别赛道，按粉分阶段）
+- `references/handbook/` — 8章手册原文，可 `git pull` 更新
+- `references/topics.json` / `topics.generic.json` — 词表，可自定义或自动识别
+- `references/metrics.md` / `csv-aliases.md` — 指标与列名容错说明
 
 ## Guardrails
 
-- 缺 `Post id/Post text/Impressions` 报错；小时必走 Snowflake，不走 `Date`
-- 不自动 `git push`，只写本地
+- 缺 `Post id / Post text / Impressions` 直接报错
+- 小时用 Snowflake `(id>>22)+1288834974657 → CST` 还原
+- 只写本地，不自动 `git push`
