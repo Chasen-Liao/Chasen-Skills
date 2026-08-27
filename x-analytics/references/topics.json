@@ -1,12 +1,10 @@
 {
-  "Pi/Harness": ["pi", "harness", "思考球", "桌面端"],
-  "Codex/额度": ["codex", "tibo", "额度", "限流", "重置"],
-  "Gemini/Flash": ["gemini", "哈基米", "串稀"],
-  "OxAlpha/牛来": ["ox alpha", "牛来", "mimo", "匿名模型"],
-  "Agent/Apodex": ["apodex", "agent team", "多智能体", "deep discover"],
-  "DeepSeek": ["deepseek"],
-  "DeepSeek/Flash": ["deepseek flash", "deepseek-v4", "deepseek v4"],
-  "Kimi/K3": ["kimi", "k3"],
-  "Cherry": ["cherry"],
-  "Tutti/Dethink": ["tutti", "dethink"]
+  "模型评测与发布": ["gpt", "claude", "gemini", "deepseek", "kimi", "qwen", "grok", "llama", "模型", "发布", "新模型", "评测", "benchmark", "跑分", "sota", "mimo", "ox alpha", "牛来"],
+  "Agent与工作流": ["agent", "工作流", "workflow", "多智能体", "harness", "自动化", "多步", "mcp", "subagent", "任务拆解", "deep discover"],
+  "Vibe Coding与开发者工具": ["code", "编程", "vibe coding", "cursor", "copilot", "codex", "opencode", "pi", "ide", "cli", "tool", "开发者工具", "harness"],
+  "AI产品与变现": ["产品", "商业化", "变现", "创业", "saas", "成本", "token", "api", "定价", "tutti", "dethink", "商单", "增长"],
+  "教程与实战": ["教程", "实战", "手把手", "可复现", "复现", "skill", "prompt", "指南", "踩坑", "复盘", "step"],
+  "行业观察": ["行业", "趋势", "前沿", "资讯", "新闻", "观察", "解读", "报告", "动态", "热点"],
+  "个人思考": ["思考", "观点", "感悟", "成长", "总结", "随想", "随笔", "心得", "认知"],
+  "其他日常": ["日常", "生活", "吐槽", "碎碎念"]
 }

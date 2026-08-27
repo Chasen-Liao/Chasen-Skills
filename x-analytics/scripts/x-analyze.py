@@ -36,13 +36,13 @@ ALIASES = {
 }
 
 DEFAULT_TOPICS = {
-    "Pi/Harness": ["pi","harness","思考球","桌面端"],
-    "Codex/额度": ["codex","tibo","额度","限流","重置"],
-    "Gemini/Flash": ["gemini","哈基米","串稀"],
-    "OxAlpha/牛来": ["ox alpha","牛来","mimo","匿名模型"],
-    "Agent/Apodex": ["apodex","agent team","多智能体","deep discover"],
-    "DeepSeek": ["deepseek"],
-    "Tutti/Dethink": ["tutti","dethink"],
+    "模型评测与发布": ["gpt","claude","gemini","deepseek","kimi","qwen","grok","llama","模型","发布","新模型","评测","benchmark","跑分","sota","mimo","ox alpha","牛来"],
+    "Agent与工作流": ["agent","工作流","workflow","多智能体","harness","自动化","多步","mcp","subagent","任务拆解","deep discover"],
+    "Vibe Coding与开发者工具": ["code","编程","vibe coding","cursor","copilot","codex","opencode","pi","ide","cli","tool","开发者工具"],
+    "AI产品与变现": ["产品","商业化","变现","创业","saas","成本","token","api","定价","tutti","dethink","商单","增长"],
+    "教程与实战": ["教程","实战","手把手","可复现","复现","skill","prompt","指南","踩坑","step"],
+    "行业观察": ["行业","趋势","前沿","资讯","新闻","观察","解读","报告","动态","热点"],
+    "个人思考": ["思考","观点","感悟","成长","总结","随想","随笔","心得","认知"],
 }
 
 def norm_key(k): return k.strip().lower().replace("_"," ").strip()
@@ -302,7 +302,7 @@ def main():
         avgs_t = [sum(x["impressions"] for x in ts[t])/len(ts[t]) for t in topics_sorted]
         fig, ax = plt.subplots(figsize=(11, 4.5))
         y = np.arange(len(topics_sorted))
-        cols = ["#EF4444" if t=="Pi/Harness" else "#F59E0B" if t in ["DeepSeek","Cherry","Kimi/K3"] else "#94A3B8" for t in topics_sorted]
+        cols = ["#EF4444" if i==0 else "#F59E0B" if i<3 else "#94A3B8" for i,t in enumerate(topics_sorted)]
         ax.barh(y, avgs_t, color=cols, edgecolor="white", height=0.55)
         ax.set_yticks(y); ax.set_yticklabels([f"{t} (n={len(ts[t])})" for t in topics_sorted], fontsize=9)
         ax.set_xlabel("Avg Impressions (原创)"); ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v,_: f"{int(v/1000)}k"))
@@ -434,7 +434,7 @@ mode: "{depth}"
 |---|---:|---:|---:|---:|
 {topic_table}
 
-> Pi/Harness 若上榜，通常总量与收藏双高；Agent/Apodex 均<1k时建议并入 Pi 故事而非单推。
+> 均值最高的 1-2 个话题通常是你的核心赛道；均值<1000 且条数>10 的话题建议收敛或并入主赛道。
 
 ## 2. 转化漏斗
 
