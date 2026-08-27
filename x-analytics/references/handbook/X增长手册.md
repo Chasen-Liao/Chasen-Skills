@@ -1,7 +1,7 @@
 ---
 title: X 增长手册
 type: 手册
-status: archived
+status: 已整理
 created: 2026-07-27
 updated: 2026-08-06
 aliases:

@@ -42,7 +42,7 @@ python scripts/x-analyze.py "./xxx.csv" --out ./x-reports --yes
 
 ## References
 
-- `handbook/` — 克隆自 `02-Sources/Web-Clips/Misc/x-growth-handbook/`，8章可查询
+- `handbook/` — 克隆自 `https://github.com/bozhouDev/x-growth-handbook`（8章，可直接查询，`git pull` 可更新）
 - `topics.json` — 通用 8类（模型/Agent/Vibe Coding/产品/教程/行业/思考/其他）
 
 ## Guardrails
