@@ -1,0 +1,17 @@
+# npx skills 本地锁与安装产物
+skills-lock.json
+.agents/
+.claude/
+.pi/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 编辑器与系统
+.DS_Store
+Thumbs.db
+*.log

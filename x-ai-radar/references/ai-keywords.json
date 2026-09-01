@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "description": "AI relevance pre-filter for x-ai-radar. Hit => maybe, then LLM judges high/medium/low. Keep high/medium.",
+  "keywords": [
+    "AI", "AGI", "LLM", "SLM", "VLM", "diffusion",
+    "GPT", "ChatGPT", "OpenAI", "Anthropic", "Claude", "Gemini", "Grok", "xAI", "DeepSeek", "Mistral", "Llama", "Gemma", "Qwen", "Kimi", "Yi",
+    "agent", "Agent", "MCP", "function calling", "tool use", "RAG", "vector db", "embedding",
+    "reasoning", "RLHF", "RLVR", "SFT", "MoE", "quantization", "distillation", "fine-tune", "fine tuning",
+    "cursor", "vibe coding", "codegen", "copilot", "codex",
+    "inference", "training", "token", "context window", "KV cache", "attention",
+    "multimodal", "TTS", "STT", "image generation", "video generation", "Sora", "Veo",
+    "benchmark", "eval", "SWE-bench", "MMLU", "GPQA"
+  ],
+  "cn_keywords": [
+    "大模型", "模型", "智能体", "推理", "微调", "蒸馏", "量化", "长上下文", "多模态"
+  ]
+}
