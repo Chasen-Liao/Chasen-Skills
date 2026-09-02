@@ -11,6 +11,9 @@ __pycache__/
 .venv/
 venv/
 
+# 文档（本地研究/草稿，不入库）
+docs/
+
 # 编辑器与系统
 .DS_Store
 Thumbs.db
