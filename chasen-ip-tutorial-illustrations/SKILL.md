@@ -1,20 +1,37 @@
 ---
 name: chasen-ip-tutorial-illustrations
-description: Generate original 16:9 Chinese tutorial illustrations with Chasen's anime personal IP, consistent character design, white hand-drawn explanatory visuals, sparse short Chinese annotations, separate images for each core idea, and repository asset archiving. Use when users ask for tutorial, workflow, method, tool, process, concept, or system illustrations featuring Chasen; a full tutorial text is optional.
+description: >-
+  Generate Chasen IP visuals: default 16:9 white hand-drawn tutorial
+  illustrations; dense 信息图 when asked; vibrant X Article / 商单 covers (prefer
+  ~5:2) when the ask is 封面/cover. Use for tutorial, workflow, concept,
+  comparison, or cover banners featuring Chasen.
+license: MIT
+compatibility: Needs local image viewer and built-in image_gen with reference-image input.
 metadata:
   author: Chasen-Liao
-  version: "0.1.0"
+  version: "0.2.0"
   category: workflow
-  requires: Local image viewer and built-in image_gen with reference-image input support.
+  requires: >-
+    Local image viewer and built-in image_gen with reference-image input
+    support.
 ---
-
 # Chasen IP 教程配图
 
 ## 定位
 
-把一个教程、工具、流程、方法、概念或抽象观点，转化为一张清爽、可读、有动作感的 Chasen IP 解释型配图。
+把一个教程、工具、流程、方法、概念或抽象观点，转化为一张清爽、可读、有动作感的 Chasen IP 解释型配图；或在用户要「封面 / cover / 商单封面」时，出一张有冲击力的横版封面。
 
 这个 skill 不要求先读取完整教程。用户可以只给一句画面需求；只要核心对象和动作明确，就直接生成。默认使用内置 `image_gen`，不切换到 CLI/API 路径。
+
+## 模式选择（写 prompt 前先定）
+
+| 模式 | 何时用 | 画幅与气质 |
+|---|---|---|
+| **解释型配图（默认）** | 教程步骤、概念、动作演示 | 16:9，**纯白底**，手绘平涂，留白 |
+| **信息图** | 用户说信息图 / 对比图 / 信息密度要大 | 16:9，白底高密度卡片，Chasen 极小 |
+| **封面** | 用户说封面、cover、X 长文封面、商单封面，或给了海报参考要改中文标题 | **约 5:2**（见下），**禁止单调白底整页**，要有场景/氛围和艺术字 |
+
+2026-11-01 反馈：解释型白底教程图若拿去当封面会「太单调、不吸睛」。封面必须走封面模式，不要套默认白底规则。
 
 ## 参考资产
 
@@ -35,6 +52,8 @@ assets/chasen-ip/02-头像与立绘/Chasen-个人IP-头像-微笑.png
 
 若当前对话尚未加载参考图，先用本地图片查看工具检查，再作为 `Image 1: character visual reference` 传给图像生成工具。不要修改或覆盖 Skill 内的原始素材。
 
+**Grok Bot / GenerateImage 路径限制**：参考图须先复制到 `/workspace/...` 或当前 agent 的 `attachments` / `assets` 下再传入；Skill 目录原路径有时不能直接当 `reference_image_paths`。
+
 ## 适用请求
 
 触发例子包括：
@@ -43,6 +62,8 @@ assets/chasen-ip/02-头像与立绘/Chasen-个人IP-头像-微笑.png
 - “给这个 Vibe Coding 方法画一张教程配图。”
 - “画 Chasen 排查报错、找到问题并修复的过程。”
 - “用 Chasen 解释这个 AI Agent 工作流。”
+- “出一张信息图 / 对比图，信息密度要大。”
+- “做一张 X 长文封面 / 商单封面，融入 IP，中文标题……”
 
 用户没有提供完整教程时，不要求补交正文。若主题、对象和动作仍然足够明确，直接补全构图并生成；只有缺少核心对象或动作时才追问。
 
@@ -50,7 +71,11 @@ assets/chasen-ip/02-头像与立绘/Chasen-个人IP-头像-微笑.png
 
 ### Chasen IP
 
-每张图都让 Chasen 成为核心动作主体：操作、演示、排查、解释、连接、搬运、反应或展示，不要让她只是站在旁边装饰。
+**默认（解释型配图）**：每张图都让 Chasen 成为核心动作主体：操作、演示、排查、解释、连接、搬运、反应或展示，不要让她只是站在旁边装饰。
+
+**信息图例外**：见下方「信息图模式」。
+
+**封面**：Chasen 可占画面右半作展示主体（拿产品、比耶、递卡等），须保持 IP 一致；可保留官方提供的小吉祥物（如黄星星），不要另造无关角色。
 
 必须尽量保持：
 
@@ -63,91 +88,155 @@ assets/chasen-ip/02-头像与立绘/Chasen-个人IP-头像-微笑.png
 
 AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，不强迫每张图都出现完整 UI。
 
-### 画面风格
+### 画面风格（解释型默认）
 
 - 默认 16:9 横版；只有用户明确要求时才切换为 1:1 或 4:5。
 - 纯白背景，深灰手绘线稿，清爽平涂，少量柔和阴影。
 - 主色为粉色、白色、浅灰、青蓝和深灰；保持与 Chasen 设定板一致。
-- 单图只表达一个核心意思，保留明显留白。
+- 默认单图只表达一个核心意思，保留明显留白（信息图 / 封面除外）。
 - 可以使用少量怪诞或隐喻元素，但隐喻必须服务于教程内容，不能照搬小黑技能的角色、颜色或已有构图。
-- 不做 PPT、商业信息图、复杂架构图或满屏 UI。图要像一张有动作的手绘解释图。
+- 默认不做 PPT、商业海报或满屏 UI；普通解释图要像一张有动作的手绘解释图。信息图模式允许左右对比卡片与标签墙，但仍保持手绘平涂气质，不用真实截图拼贴。
 
-### 文字
+### 文字（解释型默认）
 
 - 默认不生成文字。
 - 用户明确提供文字时，只保留 1–5 个短中文关键词或短句，并要求逐字准确、手写批注感。
 - 不擅自添加标题、段落、品牌名、长句或复杂 UI 文案。
 - 避免左上角自动出现“教程”“流程图”“常见坑”等类型标题。
+- **信息图模式**下允许更多短中文标签（见下节），英文专有名必须逐字正确；生成后要核验拼写，错了就本地改字或重生成。
+
+## 封面模式（2026-11-01 增补）
+
+对标用户认可的商单封面气质：有场景、有层次、有钩子字，一眼停得住；不是白底教材插图。
+
+### 何时启用
+
+用户说「封面」「cover」「长文封面」「商单封面」，或丢来官方海报要改中文 / 融入 IP。未点名封面时，不要把解释型白底图当封面交付。
+
+### 画幅
+
+- 交付目标约 **5:2**（例如 1280×512 或相近宽幅）。
+- 若生成器只支持 `16:9` / `1:1` 等：用 **16:9 出图，再中心/偏上裁成 5:2**；prompt 里写清「重要文字与人物放在可被 5:2 裁切的安全带内」。
+- 交付前自检裁切后是否切掉标题、Logo 或脸。
+
+### 构图硬规则
+
+1. **左文右物**（可左右对调，但必须一边是标题区、一边是 Chasen + 产品）。
+2. **背景必须有氛围**：浅蓝天空/云、城市剪影、地球线框、柔和光斑、品牌色渐变等；**禁止整页纯白或大块不透明白 PPT 卡片盖住场景**。可读性用「半透明浅色雾面 / 轻渐变」托字，不要硬贴白矩形。
+3. **Chasen 有表情、有动作**：递卡、展示手机、比心等；耳机与 `C` 标识清晰。
+4. **产品道具**：卡、手机 App 框等按 brief；用户说卡面人名无所谓时可保留示意名。
+5. **可加品牌吉祥物**（若参考图有）：如 Starryblu 黄星星；不要乱加第二个人设。
+6. **禁止**：残字叠字、裁切后半截 Logo、第三方 Logo 水印、整页黑字无层次。
+
+### 封面文字（用户提供的文案逐字用）
+
+- 允许 主标题 / 副标题 / 角标按钮 三层；主标题要有**艺术字感**（描边、双色、立体或强调色块），不要整页同一号纯黑黑体。
+- 品牌名用指定拼写（如 `Starryblu`），专有名词不要写错。
+- 生成后核验中文是否乱码、是否漏字；乱了就本地贴字或单点重做左边字，不要整图糊弄。
+
+### 封面 prompt 要点
+
+- `Use case: illustration-story` 或营销横幅气质，但人物仍跟 IP 参考。
+- 明确写：`no solid white poster panel`、`scenic or sky gradient background`、`artistic layered Chinese headline`、`5:2 safe crop band`。
+- 若用户给了官方参考图：只借构图/道具/氛围，**不要抄英文原文**；中文用用户定稿。
+
+### 封面交付前自检
+
+- 缩略图下是否还看得清主标题？
+- 是否像「白底课本插图」？（是则重做）
+- 5:2 裁切后 Logo/脸/按钮是否完整？
+- 中文是否与用户定稿一致？
+
+## 信息图模式（用户说「信息图 / 对比图 / 信息密度要大」时启用）
+
+2026-11-01 定稿，对标已通过的 Pi codemode 讲解图。
+
+### 何时启用
+
+用户明确要「信息图」「对比信息图」「讲解图信息密度大」等，或要一张图讲清左右对比 / 多步流程时启用。未点名时仍走默认解释型配图。
+
+### 构图硬规则
+
+1. **Chasen 极小、靠边**：只占约画面高度的 10%–15%，优先**左下角露头（头肩）**，看向信息区；禁止居中大立绘抢版面。
+2. **信息占主画面**：左右对比、步骤卡片、标签、底栏结论尽量铺满中间与右侧，信息密度优先于留白。
+3. **结构优先**：常见骨架 = 顶栏一句话结论 / 标题 → 左「旧/问题」多步卡片 → 中「换成」箭头 → 右「新/方案」多步卡片 + 侧边短标签 → 底栏一句行动号召。步数可 4–6，左右大致对称。
+4. **文字来源**：标签从用户稿或已定原理稿提炼短句（每条尽量 ≤12 字），不要编实测数字；专有英文名（如 `codemode`）拼写必须正确。
+5. **Use case**：提示词用 `productivity-visual`；仍附 Chasen 视觉规范板作参考。
+6. **检查**：Chasen 是否过大、英文是否拼错、中文是否糊成乱码、是否变成无人物的纯 PPT。任一不过就单点迭代；英文拼错可用本地贴字修正后再交付。
+
+### 交付
+
+说明用途与保存路径即可。Grok Bot 默认存 `/workspace/chasen-ip/illustrations/YYYY-MM-DD-<主题>/`，选题配图可再复制一份到对应 `topics/<slug>/`。
 
 ## 工作流
 
 ### 1. 解析请求
 
-提炼四件事：
+先判定模式：解释型 / 信息图 / **封面**。再提炼：
 
-1. 核心对象：工具、代码、流程、问题或概念。
-2. 核心动作：Chasen 正在做什么。
+1. 核心对象：工具、代码、流程、问题、概念或产品。
+2. 核心动作：Chasen 正在做什么（信息图可为角落露头；封面可为展示产品）。
 3. 认知结果：观众看完要理解什么。
-4. 必要元素：最多加入 1–2 个辅助物件或符号。
+4. 必要元素：默认最多 1–2 个辅助物件；信息图允许多卡；封面允许场景 + 卡/手机 + 吉祥物。
 
-如果用户一次提出多个核心意思，为每个意思单独生成一张图，不拼成多格图。
+如果用户一次提出多个核心意思且**不是**信息图 / 封面请求，为每个意思单独生成一张图，不拼成多格图。
 
 ### 2. 组织提示词
 
 每张图的提示词至少包含：
 
-- `Use case: illustration-story`；如果用户明确要求流程图或结构图，再考虑 `productivity-visual`。
-- `Asset type: 16:9 Chinese tutorial illustration`。
-- `Input images: Image 1: Chasen visual reference`。
-- 纯白背景、Chasen 核心动作、单一视觉隐喻或结构、留白和短文字约束。
-- 明确要求保持发型、耳机、服装、C 标识和粉白青蓝配色一致。
-- 明确禁止额外角色、可读性差的长文字、品牌 Logo、水印、密集背景和风格漂移。
+- `Use case: illustration-story`；流程图、结构图或**信息图**用 `productivity-visual`；封面写清 banner / cover。
+- `Asset type`：解释型 / 信息图用 `16:9 Chinese tutorial illustration`；封面写 `wide Chinese cover banner (~5:2 safe area)`。
+- `Input images: Image 1: Chasen visual reference`（路径须在生成器允许目录）。
+- 解释型：纯白背景、粉白青蓝配色、发型耳机服装与 C 标识一致。
+- 信息图：明确写「Chasen tiny head-and-shoulders bottom-left only」「dense two-column cards」「exact Chinese/English labels」。
+- 封面：明确写场景背景、艺术字标题、禁止白底整页 / 禁止不透明白卡片挡景、5:2 安全带。
+- 禁止额外无关角色、第三方 Logo、水印；解释型仍禁止密集写实背景。
 
-不要把多个不同画面的 prompt 合并在一次生成里；每个核心意思调用一次图像生成。
+不要把多个不同画面的 prompt 合并在一次生成里（信息图 / 封面单板除外）。
 
 ### 3. 生成
 
-用户已经明确要求“生成/画/做配图”时，直接调用内置 `image_gen`，不先等待额外确认。使用 Skill 内的参考图作为输入图，并把它标记为角色视觉参考，而不是编辑目标。若当前环境没有内置图像生成工具，说明缺少的依赖，不静默改用 CLI/API，也不声称已生成。
+用户已经明确要求“生成/画/做配图/封面”时，直接调用内置 `image_gen`，不先等待额外确认。使用 Skill 内的参考图作为输入图，并把它标记为角色视觉参考，而不是编辑目标。若当前环境没有内置图像生成工具，说明缺少的依赖，不静默改用 CLI/API，也不声称已生成。
 
-如果生成结果中的角色、动作、画幅、留白或文字不符合规范，先检查结果，再只修改一个主要问题进行针对性重生成。不要为了追求数量自动生成大量变体。
+如果生成结果中的角色、动作、画幅、留白或文字不符合规范，先检查结果，再只修改一个主要问题进行针对性重生成。不要为了追求数量自动生成大量变体。封面若裁切翻车，优先重裁或局部修字，再整图重做。
 
 ### 4. 检查
 
 归档前检查：
 
-- Chasen 是否真正参与核心动作。
+- 默认：Chasen 是否真正参与核心动作。信息图：Chasen 是否已缩到角落且不过大。封面：是否吸睛、有无白底单调、文字是否清晰无残字。
 - 发型、耳机、服装、C 标识和配色是否稳定。
-- 是否只有一个核心意思，辅助元素是否过多。
-- 是否为默认 16:9，背景是否干净留白。
-- 中文标注是否仅来自用户提供的短文本，是否出现乱码或多余文字。
+- 默认是否只有一个核心意思；信息图步骤与标签是否可读、专有名拼写是否正确。
+- 解释型 / 信息图是否为 16:9；封面交付是否为约 5:2。
+- 中文标注是否准确、有无乱码。
 - 是否误用了小黑 IP、现有案例构图、第三方 Logo 或水印。
 
 不满足时，优先单点迭代；未通过检查的版本不要作为最终资产交付。
 
 ### 5. 保存
 
-优先按用户指定目录保存。未指定时，以当前项目根目录为基准，将最终图片保存到：
+优先按用户指定目录保存。未指定时：
 
-```text
-03-Assets/YYYY-MM-DD-<主题>-chasen-ip-illustrations/
-```
+- Grok Bot：`/workspace/chasen-ip/illustrations/YYYY-MM-DD-<主题>/`
+- 其他项目：`03-Assets/YYYY-MM-DD-<主题>-chasen-ip-illustrations/`
 
-同一批素材按顺序命名，例如：
-
-```text
-01-api-debugging.png
-02-agent-loop.png
-```
-
-不要覆盖已有文件；修订使用 `-v2`、`-v3` 等后缀。内置生成器的默认输出可以保留，但项目最终使用的图片必须复制到上述输出目录。生成结果不要写回 Skill 安装目录或 `assets/` 素材目录。
+同一批素材按顺序命名；不要覆盖已有文件；修订用 `-v2`、`-v3`。封面可另存 `cover-5x2-final.png`。生成结果不要写回 Skill 安装目录或 `assets/` 素材目录。
 
 ## 交付口径
 
 完成后只需说明：
 
-- 生成了几张。
+- 生成了几张、用的哪一种模式。
 - 每张图的用途。
 - 最终保存路径。
 - 是否做过针对性迭代。
 
 不要输出冗长的风格理论或完整提示词解析，除非用户主动要求。
+
+## Grok Bot 环境适配
+
+- 本 skill 是 Chasen 所有 Bot 出图的**默认入口**（2026-10-31 起）；**封面请求必须走封面模式**，不要再用默认白底教程规则硬套。
+- 内置 `image_gen` = `GenerateImage`；参考图先拷到 `/workspace` 或 agent attachments/assets。
+- `GenerateImage` 若无原生 5:2，用 16:9 生成再裁；交付封面时以 5:2 为准。
+- 未指定保存目录时，存到 `/workspace/chasen-ip/illustrations/YYYY-MM-DD-<主题>/`，不要写回本 skill 目录。

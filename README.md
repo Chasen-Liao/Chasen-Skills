@@ -32,7 +32,7 @@
 | **📡 [x-ai-radar](./x-ai-radar/README.md)** | 只读刷 X 时间线 → **10小时内 AI 热帖雷达**，按热度分排 Top 8-10 中文榜 | 想快速追 AI 热点 | [→ README](./x-ai-radar/README.md) |
 | **🎨 [personal-ip-builder](./personal-ip-builder/README.md)** | 从喜欢的动漫参考图 → **整套个人 IP 数字资产**，可选沉淀成教程配图 skill | 做自媒体 IP / 教程配图 | [→ README](./personal-ip-builder/README.md) |
 | **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖子或长文**，内置风格指南 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
-| **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，生成统一风格的 **16:9 白底手绘教程配图** | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
+| **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面（约 5:2）** 三种模式统一风格配图 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
 
 > 💡 每个 Skill 目录下都有独立 `README.md`，介绍**做什么、怎么装、怎么用**；`SKILL.md` 是给 Agent 看的执行契约。
 
@@ -72,7 +72,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 | `x-ai-radar` | `/x-ai-radar` 或自然语言 `刷一下 X AI 热榜` |
 | `parallel-agent` | Agent 自主判断：当任务可拆为 2+ 独立子域时自动启用 |
 | `personal-ip-builder` | `打造个人IP` / `从参考图做角色资产` / `/personal-ip-builder` |
-| `chasen-ip-tutorial-illustrations` | `用 Chasen 解释这个工作流` / `$chasen-ip-tutorial-illustrations` |
+| `chasen-ip-tutorial-illustrations` | `用 Chasen 解释这个工作流` / `画信息图或商单封面` / `$chasen-ip-tutorial-illustrations` |
 
 ---
 
