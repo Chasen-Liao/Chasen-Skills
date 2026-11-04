@@ -1,11 +1,11 @@
 ---
 name: chasen-x-writing
-description: "Chasen（@chasen_liao）讲了思路、口播、分享或实操，要你用他的口吻写成 \U0001D54F 帖/长文时使用；也用于改他的草稿。开写前必须先对齐「要传达什么观点」。本 skill 是路由入口，按场景再读子文件。"
+description: "Chasen（@chasen_liao）讲了思路、口播、分享或实操，要你用他的口吻写成 \U0001D54F 帖/长文时使用；也用于改他的草稿。开写前必须先对齐「要传达什么观点」。本 skill 是路由入口，按场景再读子文件。 短叙事禁止短句断行和同义复述。"
 license: MIT
 compatibility: 需可读 references/ 与同目录路由子文件
 metadata:
   author: Chasen-Liao
-  version: "0.3.0"
+  version: "0.3.1"
   category: workflow
 ---
 # 把 Chasen 的思路写成 𝕏 文章（路由入口）
@@ -19,7 +19,7 @@ metadata:
 1. 对齐观点 → 读 [align.md](align.md)
 2. 定稿型 → 读 [draft-types.md](draft-types.md)
 3. 定流量目标与帖型 → 读 [traffic.md](traffic.md)
-4. 动笔时的声音与硬规则 → 读 [voice-and-craft.md](voice-and-craft.md)
+4. 动笔时的声音与硬规则 → 读 [voice-and-craft.md](voice-and-craft.md)（含短叙事：一段一事、一句扛完因果、禁止同义复述）
 5. 交稿前 → 读 [deliver.md](deliver.md)
 
 ## 按需加深
