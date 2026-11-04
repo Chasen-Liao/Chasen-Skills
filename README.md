@@ -31,7 +31,7 @@
 | **📊 [x-analytics](./x-analytics/README.md)** | 丢一个 X Content Analytics CSV → 自动出 **深度复盘报告 + 6张图 + 手册对标建议** | 运营 X / 做内容复盘 | [→ README](./x-analytics/README.md) |
 | **📡 [x-ai-radar](./x-ai-radar/README.md)** | 只读刷 X 时间线 → **10小时内 AI 热帖雷达**，按热度分排 Top 8-10 中文榜 | 想快速追 AI 热点 | [→ README](./x-ai-radar/README.md) |
 | **🎨 [personal-ip-builder](./personal-ip-builder/README.md)** | 从喜欢的动漫参考图 → **整套个人 IP 数字资产**，可选沉淀成教程配图 skill | 做自媒体 IP / 教程配图 | [→ README](./personal-ip-builder/README.md) |
-| **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖子或长文**；开写前先对齐一个观点 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
+| **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖**；人味优先，口播观点默认不套爆款公式 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面（约 5:2）** 三种模式统一风格配图 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
 
 > 💡 每个 Skill 目录下都有独立 `README.md`，介绍**做什么、怎么装、怎么用**；`SKILL.md` 是给 Agent 看的执行契约。
@@ -51,6 +51,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill x-ai-radar --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill parallel-agent --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill personal-ip-builder --global --yes
+npx skills add Chasen-Liao/Chasen-Skills --skill chasen-x-writing --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill chasen-ip-tutorial-illustrations --global --yes
 ```
 
@@ -72,6 +73,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 | `x-ai-radar` | `/x-ai-radar` 或自然语言 `刷一下 X AI 热榜` |
 | `parallel-agent` | Agent 自主判断：当任务可拆为 2+ 独立子域时自动启用 |
 | `personal-ip-builder` | `打造个人IP` / `从参考图做角色资产` / `/personal-ip-builder` |
+| `chasen-x-writing` | `把这段口播写成帖` / `按我的口吻改这篇` / `$chasen-x-writing` |
 | `chasen-ip-tutorial-illustrations` | `用 Chasen 解释这个工作流` / `信息图` / `做封面` / `$chasen-ip-tutorial-illustrations` |
 
 ---
@@ -106,6 +108,13 @@ Chasen-Skills/
 │   ├── SKILL.md
 │   ├── README.md
 │   └── references/              # 资产验收清单 / 设计访谈顺序
+│
+├── chasen-x-writing/            # 𝕏 写稿：人味优先，口播观点默认不套公式
+│   ├── SKILL.md
+│   ├── README.md
+│   ├── align.md / draft-types.md / traffic.md
+│   ├── voice-and-craft.md / deliver.md
+│   └── references/
 │
 ├── chasen-ip-tutorial-illustrations/ # Chasen IP 教程配图，内置角色参考素材
 │   ├── SKILL.md
