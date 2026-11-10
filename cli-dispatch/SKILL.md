@@ -7,7 +7,7 @@ license: MIT
 compatibility: 需本地 Pi、Magpie 网关（至少一个 magpie accounts add 或 API provider）、bubblewrap、scripts/pi-run.sh；推荐 DISPATCH_HOME、PI_MODEL
 metadata:
   author: Chasen-Liao
-  version: "0.3.0"
+  version: "0.3.1"
   category: workflow
 ---
 
