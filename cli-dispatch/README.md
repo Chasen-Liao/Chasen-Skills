@@ -1,14 +1,12 @@
 # 🚦 cli-dispatch
 
-> Bot 只拆任务和验收，**重活交给本地 Pi（经 Magpie 吃本机订阅/API 额度）** — 省 Bot 额度；自带沙箱、`pi-run.sh` 开箱即用。
+> Bot 只拆任务和验收，**重活直接交给本机 Pi 的无头模式（`pi -p`）** — 省 Bot 额度，不用任何包装脚本。
 
 <p>
 
-![Shell](https://img.shields.io/badge/Wrapper-bash-4b5563?style=flat-square&logo=gnu-bash&logoColor=white)
-![Executor](https://img.shields.io/badge/Executor-Pi_+_Magpie-0ea5e9?style=flat-square)
-![Model](https://img.shields.io/badge/Model-via_PI__MODEL-64748b?style=flat-square)
-![Safety](https://img.shields.io/badge/Permissions-scan_·_code_·_write-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.3.1-7c3aed?style=flat-square)
+![Executor](https://img.shields.io/badge/Executor-pi_--p-0ea5e9?style=flat-square)
+![Thinking](https://img.shields.io/badge/thinking-medium-64748b?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.4.0-7c3aed?style=flat-square)
 
 </p>
 
@@ -18,112 +16,59 @@
 
 | 能力 | 说明 |
 | :--- | :--- |
-| **🧠 Bot 减负** | 远端 Agent 只做拆解、任务书、派活、验收 |
-| **⚡ Pi + Magpie** | 本机网关反代 Magpie 已登录的 **Codex / Claude / Copilot / Gemini / Antigravity** 等订阅，或 API preset；模型由 `PI_MODEL` / `--model` 指定 |
-| **🔒 三档权限** | `scan` / `code` / `write` + bwrap；断网后只连 Magpie |
-| **✅ 真验收** | JSON 模式解析 `denied_actions`、`--expect`、quota 闸门 |
-| **⏱️ 后台** | 最多 2 并发，`--bg` + `status/*.json` |
-| **📉 额度闸门** | 适用时（如 Gemini 5h 窗口）>90% 直接 `FAIL: quota` |
-| **🏠 DISPATCH_HOME** | 默认 `~/.pi-dispatch`，无写死个人路径 |
+| **🧠 Bot 减负** | 远端 Bot 只做拆解、任务说明、派活、验收 |
+| **⚡ 直接 `pi -p`** | 一条命令派活，provider / model 随本机配置（可经 Magpie 网关） |
+| **🔔 自动唤醒** | Bot 用自己的 Shell 后台跑，Pi 一退出 Bot 就被唤醒，不用轮询 |
+| **👀 按需看进度** | `--mode json` 写日志，`rg` 一行看最近工具和是否 `agent_end` |
+| **✅ Bot 自己验收** | 看产物和 diff，不合格最多重派两次 |
+
+> ⚠️ 没有沙箱：Pi 能读写删本机任意文件、能联网。只在信任的机器上用，任务说明里写清边界；删除、发送、付款、发帖永远不交给 Pi。
 
 ---
 
 ## 🚀 安装
 
-按顺序执行：
-
 ```bash
 # 1. Pi
 curl -fsSL https://pi.dev/install.sh | sh
 
-# 2. Magpie
+# 2. 配一个 provider（示例：Magpie 网关，仅本机，不要 --lan / --web）
 curl -fsSL https://usemagpie.ai/install.sh | sh
-
-# 3. 添加 Magpie 订阅（任选其一；⚠️ 用订阅经网关反代可能违反服务条款，有封号风险，请用不怕丢的账号）
-#    完整列表以本机 magpie accounts --help 为准，常见：
-magpie accounts add codex      # ChatGPT / Codex 订阅
-magpie accounts add claude     # Claude Code 订阅
-magpie accounts add copilot    # GitHub Copilot（企业 GHE 可加 --host）
-magpie accounts add gemini     # Gemini CLI 订阅
-magpie accounts add antigravity   # Antigravity 订阅（仅作示例之一）
-
-# 4. 网关（仅本机，不要 --lan / --web）
+magpie accounts add <codex|claude|copilot|gemini|antigravity>   # ⚠️ 订阅经反代可能违反服务条款
 magpie serve
-
-# 5. Pi 侧 Magpie 扩展
 pi install npm:pi-magpie
 
-# 6. 沙箱依赖
-# Debian/Ubuntu: sudo apt install bubblewrap
-# macOS: brew install bubblewrap
-
-# 7. 本 skill
+# 3. 本 skill
 npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
 
-# 8. 工作目录与默认模型（换成你在 Magpie 里可用的 provider/model）
-export DISPATCH_HOME="${DISPATCH_HOME:-$HOME/.pi-dispatch}"
-export PI_MODEL="${PI_MODEL:-codex/gpt-5.5-codex}"   # 示例；用 magpie quota / 应用内模型列表确认
-mkdir -p "$DISPATCH_HOME"/{tasks,out,logs,status,runs}
-
-# 9. 冒烟（将 SKILL_ROOT 换成你的 skill 安装路径，或在仓库根目录用 ./cli-dispatch/...）
-SKILL_ROOT="$(pwd)"   # 示例：克隆仓库后
-"$SKILL_ROOT/cli-dispatch/scripts/pi-run.sh" --profile write "$DISPATCH_HOME/out" \
-  -p '在本目录写 ok.txt，内容为 ok' --expect "$DISPATCH_HOME/out/ok.txt"
-# 期望最后一行含 OK，退出码 0
+# 4. 冒烟
+mkdir -p ~/.pi-dispatch/logs ~/.pi-dispatch/out
+pi -p '在 ~/.pi-dispatch/out/ok.txt 写入 ok' --provider magpie --model <model> \
+  --thinking medium --no-session --mode json > ~/.pi-dispatch/logs/smoke.jsonl 2>&1
+cat ~/.pi-dispatch/out/ok.txt   # 期望输出 ok
 ```
-
-也可用 **`magpie provider add <preset> <key>`** 添加 API Key 类 preset（见 [Magpie README — Providers](https://github.com/yetone/magpie#providers)），模型同样写成 `provider/model`。
 
 ---
 
 ## 🗣️ 怎么用
 
-### 在 Agent 中（推荐）
+对你的 Bot 说：
 
-> `这个大改动按 cli-dispatch 派给 Pi` / `写任务书让本地 pi-run 扫盘`
+> `这个改动按 cli-dispatch 派给 Pi`
 
-Agent 读 `SKILL.md`，写四段任务书，调用 `scripts/pi-run.sh`。
-
-### 命令行示例
+Bot 会：写一段短的任务说明（目标、产物绝对路径、完成标准、边界）→ 用自己的 Shell 后台跑下面这条 → 被唤醒后验收。
 
 ```bash
-export DISPATCH_HOME="${DISPATCH_HOME:-$HOME/.pi-dispatch}"
-export PI_MODEL="${PI_MODEL:-claude/claude-sonnet-4-5}"   # 按你的 Magpie 目录填写
-R="./scripts/pi-run.sh"
-
-"$R" --profile code ~/my-repo -p 'npm test 并修失败' --expect ~/my-repo/.pi-ok
-"$R" --profile scan --model codex/gpt-5.5-codex --task "$DISPATCH_HOME/tasks/inventory.md"
-"$R" --profile scan --bg --task ./task.md   # 输出 run_id → status/<run_id>.json
-"$R" --profile code ~/my-repo --thinking high -p '大型重构并保证测试全绿' --expect ~/my-repo/ok.txt
+pi -p '<任务说明>' --provider <provider> --model <model> \
+  --thinking medium --no-session --mode json > ~/.pi-dispatch/logs/<短名>.jsonl 2>&1
 ```
 
-默认 `--thinking` 为 **medium**；任务复杂或要求高质量完成时加 **`--thinking high`**。
-
-完整参数见 [references/pi-run.md](./references/pi-run.md)。
-
----
-
-## 一键同款：发给你的 Bot
-
-把下面整段复制给你的 Agent（Cursor / Pi / Claude 等），让它在本机端到端装好并跑通冒烟；**遇到登录/授权时停下来请你操作**；只有冒烟打出 `OK` 才算完成。
-
-```text
-请在本机按 cli-dispatch skill 完成 Pi + Magpie 派活环境的一键安装与验收（仓库 Chasen-Liao/Chasen-Skills，skill 名 cli-dispatch）。严格按顺序：
-
-1) curl -fsSL https://pi.dev/install.sh | sh
-2) curl -fsSL https://usemagpie.ai/install.sh | sh
-3) 让我从下列 Magpie 订阅中选一种添加（先运行 magpie accounts --help 核对）；常见：magpie accounts add codex | claude | copilot | gemini | antigravity（示例）。出现 OAuth/浏览器登录时立即停止，提示我完成登录后再继续。提醒：订阅经反代可能违反服务条款，用不怕丢的账号
-4) 在后台或独立终端运行 magpie serve（仅本机，禁止 --lan 与 --web）
-5) pi install npm:pi-magpie
-6) 安装 bubblewrap（Linux: apt install bubblewrap；macOS: brew install bubblewrap）
-7) npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
-8) export DISPATCH_HOME=$HOME/.pi-dispatch && mkdir -p $DISPATCH_HOME/{tasks,out,logs,status,runs}
-9) 根据我选的订阅，在 Magpie 模型列表里挑一个 provider/model，export PI_MODEL='<provider>/<model>'，再执行：
-   pi-run.sh --profile write "$DISPATCH_HOME/out" -p '在本目录写 ok.txt，内容为 ok' --expect "$DISPATCH_HOME/out/ok.txt"
-   （pi-run 默认 --thinking medium；复杂任务可加 --thinking high）
-
-验收标准：上一步退出码 0，标准输出含 OK，且 $DISPATCH_HOME/out/ok.txt 内容为 ok。把安装路径、所选 provider、PI_MODEL、magpie serve 是否在跑、以及冒烟完整输出回报给我。若任一步失败，说明原因并停，不要跳过沙箱或使用 --no-sandbox。
-```
+| 场景 | 加什么 |
+| :--- | :--- |
+| 难活 | `--thinking high`（小活别开） |
+| 只读扫描 | `--tools read,ls,grep,find` |
+| 看进度 | `rg -o '"toolName":"\w+"' <日志> \| tail -5` |
+| 是否跑完 | `rg -q '"type":"agent_end"' <日志>` |
 
 ---
 
@@ -133,18 +78,18 @@ R="./scripts/pi-run.sh"
 cli-dispatch/
 ├── SKILL.md
 ├── README.md
-├── scripts/
-│   ├── pi-run.sh
-│   └── lib/
-│       ├── pi-netfwd.py
-│       └── pi-wrappers/   # curl git rm sudo wget
-├── templates/TASK_TEMPLATE.md
-└── references/pi-run.md
+└── templates/TASK_TEMPLATE.md
 ```
 
 ---
 
 ## Changelog
+
+### 0.4.0
+
+- 去掉 `scripts/pi-run.sh`、`lib/` 和 `references/pi-run.md`，不再用包装脚本。
+- SKILL 改为教 Bot 直接用 `pi -p` 无头模式派活：Shell 后台运行、Pi 退出自动唤醒、`--mode json` 日志按需看进度、`agent_end` 表示完成。
+- 保留任务说明模板、Bot 自己验收、最多重派两次、删/发/付/发帖不交给 Pi，加上无沙箱风险提示。
 
 ### 0.3.1
 
