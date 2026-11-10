@@ -39,7 +39,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 # 2. Magpie
 curl -fsSL https://usemagpie.ai/install.sh | sh
 
-# 3. Antigravity 账号（经 Magpie 接入，非 agy CLI）
+# 3. 登录 Antigravity 账号（经 Magpie）
 # ⚠️ Google 可能停用「在 Antigravity 产品外」使用的账号，请用备用 Google 账号
 magpie accounts add antigravity
 
@@ -136,13 +136,11 @@ cli-dispatch/
 
 ### 0.3.0
 
-- 入库通用 `scripts/pi-run.sh` + `lib/`（bwrap、Magpie 转发、wrapper、quota、status JSON）。
-- 移除 agy / Antigravity CLI 备用路径；仅保留 `magpie accounts add antigravity`。
-- `DISPATCH_HOME` 默认改为 `~/.pi-dispatch`；文档中文化与一键安装提示。
+- 改为纯 **Pi + Magpie**：入库 `scripts/pi-run.sh` + `lib/`，`DISPATCH_HOME` 默认 `~/.pi-dispatch`，文档与一键安装提示。
 
 ### 0.2.0
 
-- 执行主力改为 Pi（经 Magpie）；agy 为备用（已在 0.3.0 移除）。
+- 执行主力改为 Pi（经 Magpie）。
 
 ### 0.1.0
 
