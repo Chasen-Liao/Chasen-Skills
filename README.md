@@ -31,7 +31,7 @@
 | **📊 [x-analytics](./x-analytics/README.md)** | 丢一个 X Content Analytics CSV → 自动出 **深度复盘报告 + 6张图 + 手册对标建议** | 运营 X / 做内容复盘 | [→ README](./x-analytics/README.md) |
 | **📡 [x-ai-radar](./x-ai-radar/README.md)** | 只读刷 X 时间线 → **10小时内 AI 热帖雷达**，按热度分排 Top 8-10 中文榜 | 想快速追 AI 热点 | [→ README](./x-ai-radar/README.md) |
 | **🎨 [personal-ip-builder](./personal-ip-builder/README.md)** | 照片或参考图 → **锁定定稿后出数字资产卡**，默认打包专属配图 skill | 做个人 IP 真源 / 配图 skill | [→ README](./personal-ip-builder/README.md) |
-| **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖**；人味优先，口播观点默认不套爆款公式 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
+| **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖**；先说人话、读者一遍看懂，去 AI 味有数据支撑；口播观点默认不套爆款公式 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面** 三种模式；画幅由出图时指定 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
 | **🚦 [cli-dispatch](./cli-dispatch/README.md)** | Bot 只拆任务与验收，**重活直接派给本机 `pi -p`**，后台跑、自动唤醒、Bot 验收 | 省 Bot 额度 / 共用电脑执行 | [→ README](./cli-dispatch/README.md) |
 
