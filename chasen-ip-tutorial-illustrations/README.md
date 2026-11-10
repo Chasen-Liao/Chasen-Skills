@@ -2,7 +2,7 @@
 
 用 Chasen 的 Q 版动漫形象，为教程、工具、流程、概念生成统一风格的解释型配图；也可以出高密度信息图，以及有场景感的 X 长文 / 商单封面。角色参考素材已内置，安装后无需再访问原始 Obsidian 知识库。
 
-![Version](https://img.shields.io/badge/version-0.2.0-7c3aed?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.2.1-7c3aed?style=flat-square)
 ![Assets](https://img.shields.io/badge/角色素材-8张-0ea5e9?style=flat-square)
 ![Modes](https://img.shields.io/badge/模式-教程_|_信息图_|_封面-f59e0b?style=flat-square)
 ![Image Gen](https://img.shields.io/badge/依赖-内置_image__gen-10b981?style=flat-square)
@@ -13,7 +13,8 @@
 
 | 特性 | 说明 |
 | :--- | :--- |
-| 三种模式 | **解释型**白底教程图（默认）· **信息图**高密度对比 · **封面**有场景+艺术字（约 5:2） |
+| 三种模式 | **解释型**白底教程图（默认）· **信息图**高密度对比 · **封面**有场景+艺术字 |
+| 画幅 | 比例与像素在出图时指定，本 skill 不写死 5:2 / 16:9 等 |
 | 角色一致性 | 视觉规范板、设定板、全身立绘与头像随 Skill 分发 |
 | 解释型构图 | Chasen 参与操作、演示、排查或解释，一个核心意思一张图 |
 | 封面不单调 | 禁止整页白底 / 白 PPT 卡片；要有氛围背景、分层标题、产品道具 |
@@ -43,7 +44,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill chasen-ip-tutorial-illustration
 
 不必提供完整文章，只要主题、对象和动作明确即可。多个核心意思分别出图（信息图 / 封面单板除外）。
 
-封面若生成器只有 16:9：先出 16:9，再裁成约 5:2（如 1280×512），重要文字与人物放在可裁安全带内。
+出图时向生图工具说明本次画幅即可；封面模式保留场景与艺术字规则，不在 skill 内写死比例。
 
 ## 内置素材
 
@@ -51,9 +52,8 @@ npx skills add Chasen-Liao/Chasen-Skills --skill chasen-ip-tutorial-illustration
 | :--- | :--- |
 | `assets/chasen-ip/01-角色设定/` | 视觉规范板、角色设定板 |
 | `assets/chasen-ip/02-头像与立绘/` | 全身立绘、微笑头像 |
-| `assets/chasen-ip/03-表情与动作/` | 六格表情动作参考 |
+| `assets/chasen-ip/03-表情与动作/` | 六格表情动作参考（仅一致性参考，不出贴纸包） |
 | `assets/chasen-ip/04-内容场景/` | 横版主视觉、四格场景参考 |
-| `assets/chasen-ip/05-贴纸与装饰/` | 八格贴纸表情参考 |
 
 素材路径相对于 Skill 目录解析。无需复制到当前项目，也不修改原始素材。
 
@@ -66,7 +66,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill chasen-ip-tutorial-illustration
 └── 03-Assets/YYYY-MM-DD-api调试-chasen-ip-illustrations/
     ├── 01-api-debugging.png
     ├── 02-error-fix.png
-    └── cover-5x2-final.png
+    └── cover-final.png
 ```
 
 已有文件不覆盖，修订使用 `-v2`、`-v3` 后缀。
@@ -82,11 +82,13 @@ chasen-ip-tutorial-illustrations/
     ├── 01-角色设定/
     ├── 02-头像与立绘/
     ├── 03-表情与动作/
-    ├── 04-内容场景/
-    └── 05-贴纸与装饰/
+    └── 04-内容场景/
 ```
+
+`05-贴纸与装饰/` 仅保留历史素材文件，本 skill 工作流不引用、不出 GIF 或贴纸包。
 
 ## Changelog
 
-- **0.2.0**（2026-11-01）：新增封面模式（约 5:2、场景氛围、艺术字、禁白底 PPT 卡片）与信息图模式；解释型白底仅用于教程配图。
+- **0.2.1**：画幅与像素改由出图时指定；SKILL 去掉写死的比例参数；明确不出贴纸/GIF。
+- **0.2.0**（2026-11-01）：新增封面模式（场景氛围、艺术字、禁白底 PPT 卡片）与信息图模式；解释型白底仅用于教程配图。
 - **0.1.0**：初版解释型 16:9 白底手绘教程配图。

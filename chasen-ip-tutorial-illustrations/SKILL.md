@@ -1,15 +1,16 @@
 ---
 name: chasen-ip-tutorial-illustrations
 description: >-
-  Generate Chasen IP visuals: default 16:9 white hand-drawn tutorial
-  illustrations; dense 信息图 when asked; vibrant X Article / 商单 covers (prefer
-  ~5:2) when the ask is 封面/cover. Use for tutorial, workflow, concept,
-  comparison, or cover banners featuring Chasen.
+  Generate Chasen IP visuals: default white hand-drawn tutorial
+  illustrations; dense 信息图 when asked; vibrant X Article / 商单 covers when the
+  ask is 封面/cover. Aspect ratio and pixels are chosen at generation time, not
+  fixed in this skill. Use for tutorial, workflow, concept, comparison, or cover
+  banners featuring Chasen.
 license: MIT
 compatibility: Needs local image viewer and built-in image_gen with reference-image input.
 metadata:
   author: Chasen-Liao
-  version: "0.2.0"
+  version: "0.2.1"
   category: workflow
   requires: >-
     Local image viewer and built-in image_gen with reference-image input
@@ -25,11 +26,13 @@ metadata:
 
 ## 模式选择（写 prompt 前先定）
 
-| 模式 | 何时用 | 画幅与气质 |
+| 模式 | 何时用 | 气质 |
 |---|---|---|
-| **解释型配图（默认）** | 教程步骤、概念、动作演示 | 16:9，**纯白底**，手绘平涂，留白 |
-| **信息图** | 用户说信息图 / 对比图 / 信息密度要大 | 16:9，白底高密度卡片，Chasen 极小 |
-| **封面** | 用户说封面、cover、X 长文封面、商单封面，或给了海报参考要改中文标题 | **约 5:2**（见下），**禁止单调白底整页**，要有场景/氛围和艺术字 |
+| **解释型配图（默认）** | 教程步骤、概念、动作演示 | **纯白底**，手绘平涂，留白 |
+| **信息图** | 用户说信息图 / 对比图 / 信息密度要大 | 白底高密度卡片，Chasen 极小 |
+| **封面** | 用户说封面、cover、X 长文封面、商单封面，或给了海报参考要改中文标题 | **禁止单调白底整页**，要有场景/氛围和艺术字 |
+
+**画幅与像素**：本 skill 不写死比例（如 5:2、3:1、16:9）或像素尺寸。用户或 Agent 在调用生图工具时说明本次目标画幅即可。
 
 2026-11-01 反馈：解释型白底教程图若拿去当封面会「太单调、不吸睛」。封面必须走封面模式，不要套默认白底规则。
 
@@ -48,7 +51,7 @@ assets/chasen-ip/02-头像与立绘/Chasen-个人IP-全身立绘.png
 assets/chasen-ip/02-头像与立绘/Chasen-个人IP-头像-微笑.png
 ```
 
-其余可选参考也在 `assets/chasen-ip/` 内：`01-角色设定/Chasen-个人IP-角色设定板-v1.png`、`03-表情与动作/Chasen-个人IP-表情动作-六格.png`、`04-内容场景/Chasen-个人IP-横版主视觉.png`、`04-内容场景/Chasen-个人IP-内容场景-四格.png` 和 `05-贴纸与装饰/Chasen-个人IP-贴纸表情-八格.png`。只在相关动作或构图需要时查看，不将多格参考图直接作为交付构图。
+其余可选参考也在 `assets/chasen-ip/` 内：`01-角色设定/Chasen-个人IP-角色设定板-v1.png`、`03-表情与动作/Chasen-个人IP-表情动作-六格.png`、`04-内容场景/Chasen-个人IP-横版主视觉.png`、`04-内容场景/Chasen-个人IP-内容场景-四格.png`。只在相关动作或构图需要时查看，不将多格参考图直接作为交付构图。本 skill 不出表情包贴纸包或 GIF。
 
 若当前对话尚未加载参考图，先用本地图片查看工具检查，再作为 `Image 1: character visual reference` 传给图像生成工具。不要修改或覆盖 Skill 内的原始素材。
 
@@ -90,7 +93,7 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 
 ### 画面风格（解释型默认）
 
-- 默认 16:9 横版；只有用户明确要求时才切换为 1:1 或 4:5。
+- 默认横版构图；具体比例在本次出图时由用户或生图工具参数指定。
 - 纯白背景，深灰手绘线稿，清爽平涂，少量柔和阴影。
 - 主色为粉色、白色、浅灰、青蓝和深灰；保持与 Chasen 设定板一致。
 - 默认单图只表达一个核心意思，保留明显留白（信息图 / 封面除外）。
@@ -113,12 +116,6 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 
 用户说「封面」「cover」「长文封面」「商单封面」，或丢来官方海报要改中文 / 融入 IP。未点名封面时，不要把解释型白底图当封面交付。
 
-### 画幅
-
-- 交付目标约 **5:2**（例如 1280×512 或相近宽幅）。
-- 若生成器只支持 `16:9` / `1:1` 等：用 **16:9 出图，再中心/偏上裁成 5:2**；prompt 里写清「重要文字与人物放在可被 5:2 裁切的安全带内」。
-- 交付前自检裁切后是否切掉标题、Logo 或脸。
-
 ### 构图硬规则
 
 1. **左文右物**（可左右对调，但必须一边是标题区、一边是 Chasen + 产品）。
@@ -137,14 +134,14 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 ### 封面 prompt 要点
 
 - `Use case: illustration-story` 或营销横幅气质，但人物仍跟 IP 参考。
-- 明确写：`no solid white poster panel`、`scenic or sky gradient background`、`artistic layered Chinese headline`、`5:2 safe crop band`。
+- 明确写：`no solid white poster panel`、`scenic or sky gradient background`、`artistic layered Chinese headline`；若用户指定了画幅，在 prompt 里一并写明安全构图带。
 - 若用户给了官方参考图：只借构图/道具/氛围，**不要抄英文原文**；中文用用户定稿。
 
 ### 封面交付前自检
 
 - 缩略图下是否还看得清主标题？
 - 是否像「白底课本插图」？（是则重做）
-- 5:2 裁切后 Logo/脸/按钮是否完整？
+- 按用户指定画幅裁切后，Logo/脸/按钮是否完整？
 - 中文是否与用户定稿一致？
 
 ## 信息图模式（用户说「信息图 / 对比图 / 信息密度要大」时启用）
@@ -186,11 +183,11 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 每张图的提示词至少包含：
 
 - `Use case: illustration-story`；流程图、结构图或**信息图**用 `productivity-visual`；封面写清 banner / cover。
-- `Asset type`：解释型 / 信息图用 `16:9 Chinese tutorial illustration`；封面写 `wide Chinese cover banner (~5:2 safe area)`。
+- `Asset type`：解释型 / 信息图用 `Chinese tutorial illustration`；封面写 `Chinese cover banner`；画幅写用户本次指定的比例。
 - `Input images: Image 1: Chasen visual reference`（路径须在生成器允许目录）。
 - 解释型：纯白背景、粉白青蓝配色、发型耳机服装与 C 标识一致。
 - 信息图：明确写「Chasen tiny head-and-shoulders bottom-left only」「dense two-column cards」「exact Chinese/English labels」。
-- 封面：明确写场景背景、艺术字标题、禁止白底整页 / 禁止不透明白卡片挡景、5:2 安全带。
+- 封面：明确写场景背景、艺术字标题、禁止白底整页 / 禁止不透明白卡片挡景；画幅按用户本次指定。
 - 禁止额外无关角色、第三方 Logo、水印；解释型仍禁止密集写实背景。
 
 不要把多个不同画面的 prompt 合并在一次生成里（信息图 / 封面单板除外）。
@@ -208,7 +205,7 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 - 默认：Chasen 是否真正参与核心动作。信息图：Chasen 是否已缩到角落且不过大。封面：是否吸睛、有无白底单调、文字是否清晰无残字。
 - 发型、耳机、服装、C 标识和配色是否稳定。
 - 默认是否只有一个核心意思；信息图步骤与标签是否可读、专有名拼写是否正确。
-- 解释型 / 信息图是否为 16:9；封面交付是否为约 5:2。
+- 成图是否符合用户本次指定的画幅与模式气质。
 - 中文标注是否准确、有无乱码。
 - 是否误用了小黑 IP、现有案例构图、第三方 Logo 或水印。
 
@@ -221,7 +218,7 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 - Grok Bot：`/workspace/chasen-ip/illustrations/YYYY-MM-DD-<主题>/`
 - 其他项目：`03-Assets/YYYY-MM-DD-<主题>-chasen-ip-illustrations/`
 
-同一批素材按顺序命名；不要覆盖已有文件；修订用 `-v2`、`-v3`。封面可另存 `cover-5x2-final.png`。生成结果不要写回 Skill 安装目录或 `assets/` 素材目录。
+同一批素材按顺序命名；不要覆盖已有文件；修订用 `-v2`、`-v3`。封面可另存 `cover-final.png`。生成结果不要写回 Skill 安装目录或 `assets/` 素材目录。
 
 ## 交付口径
 
@@ -238,5 +235,5 @@ AI 悬浮界面、代码、节点或报错符号只在主题需要时加入，�
 
 - 本 skill 是 Chasen 所有 Bot 出图的**默认入口**（2026-10-31 起）；**封面请求必须走封面模式**，不要再用默认白底教程规则硬套。
 - 内置 `image_gen` = `GenerateImage`；参考图先拷到 `/workspace` 或 agent attachments/assets。
-- `GenerateImage` 若无原生 5:2，用 16:9 生成再裁；交付封面时以 5:2 为准。
+- 封面等宽幅：画幅与是否二次裁切由用户在出图时决定，本 skill 不预设比例。
 - 未指定保存目录时，存到 `/workspace/chasen-ip/illustrations/YYYY-MM-DD-<主题>/`，不要写回本 skill 目录。
