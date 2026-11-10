@@ -2,11 +2,21 @@
 
 把 Chasen 的口播、碎片想法写成他本人会发的 𝕏 帖。**人味优先于爆款公式。**
 
-![Version](https://img.shields.io/badge/version-0.4.0-7c3aed?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.5.0-7c3aed?style=flat-square)
 ![Voice](https://img.shields.io/badge/人味-优先-f59e0b?style=flat-square)
 ![Draft](https://img.shields.io/badge/默认稿型-口播观点-0ea5e9?style=flat-square)
 
-## 2026-11-05
+## 2026-11-10 (v0.5.0)
+
+| 变化 | 说明 |
+| :--- | :--- |
+| **清理过时机制** | 清理已下线的独立写帖助手配置、历史选题跟踪表、外部账号监控逻辑及旧版代发流程；发帖规则统一为：默认 Chasen 自己发，只有他说「你帮我发」才用 X 连接器 create_posts 原样代发；长文只存草稿 |
+| **合并重复规则** | 各子文件与 references 之间说同一件事的合并保留单点，其余改为引用跳转，消除冗余表述 |
+| **精简 SKILL.md** | 路由总入口大幅精简（正文 ≤ 1500 字节），只留一句定位、先对齐观点、核心铁律清单（每条一行）与场景路由表 |
+| **整合修复记录** | 将 references/writing_skill_fix_2026-10-31.md 有效规则并入 draft-types、voice-and-craft 和 deliver，移除该记录文件；精简 style_guide.md 与 structure-variety.md |
+| **排版与视觉规范** | 手机排版三条（短段多换行、正文不用句号「。」、不用「踩坑」）；emoji 只放首行末或高潮句且同一表情重复 3～5 次；生图只推荐 Codex image，封面比例 5:2 |
+
+## 2026-11-05 (v0.4.0)
 
 | 变化 | 说明 |
 | :--- | :--- |
@@ -21,11 +31,12 @@
 | 文件 | 何时读 |
 | :--- | :--- |
 | `align.md` | 开写前对齐观点。他说「随便写写」时，数据目标默认无冲量 |
-| `draft-types.md` | 口播观点 / 分享 / 实测 / 快评 / 长文。口播观点优先于硬拉分享长帖 |
+| `draft-types.md` | 口播观点 / 分享帖 / 实测 / 快评 / X 长文。口播观点优先于硬拉分享长帖 |
 | `traffic.md` | 浏览 / 收藏 / 回复 / 无冲量。8 型仅冲量帖选用 |
-| `voice-and-craft.md` | 声音、口播正反例、去 AI 味、短叙事硬卡 |
-| `deliver.md` | 交稿三问。标注是否套爆款型，多数口播写「未套」 |
-| `references/` | 语感样本。口播观点以 `voice-and-craft.md` 正例为准，不硬套分享长帖骨架 |
+| `voice-and-craft.md` | 声音、口播正反例、去 AI 味、短叙事硬卡、手机排版规范 |
+| `deliver.md` | 交付前三问、交付格式要求、统一发帖与代发规则、配图/封面规范 |
+| `references/structure-variety.md` | 结构轮换 6 种形状、编号与表情细则、反模板自查清单 |
+| `references/style_guide.md` | 风格指南、Chasen 真实高赞发帖样本与经典范例 |
 
 账号运营习惯（热点连发、收藏夹拆解）不在本 skill。
 
