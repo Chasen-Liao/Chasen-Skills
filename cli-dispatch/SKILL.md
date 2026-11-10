@@ -7,7 +7,7 @@ license: MIT
 compatibility: 需本地 Pi + Magpie 网关（已登录 Antigravity 账号）及 pi-run 包装脚本；备用需 agy；推荐配置 DISPATCH_HOME；无头环境需 dbus/keyring
 metadata:
   author: Chasen-Liao
-  version: "0.2.0"
+  version: "0.2.1"
   category: workflow
 ---
 
@@ -45,7 +45,7 @@ Grok Bot（或其他远端 Agent）额度稀缺。**Bot 只负责**：拆任务�
    - `R=pi-run.sh`（备用时换成 `scripts/agy-run.sh`）
    - `$R --profile scan --out <目录> --task tasks/<文件>.md`（`--task` 会把任务书里的产物当 `--expect`）
    - `$R --profile code <项目目录> -p '<指令>' --expect <产物>`
-   - 模型（Pi）：`--model flash`（默认）、`pro`（难的推理）、`claude`；写完整 id 时必须写全，如 `magpie/antigravity/gemini-3.8-flash`，裸名会落到 `-tiered` 档。`--thinking` 默认 low。
+   - 模型（Pi）：`--model flash`（默认）、`pro`（难的推理）、`claude`；写完整 id 时必须写全，如 `magpie/antigravity/gemini-3.8-flash`，裸名会落到 `-tiered` 档。`--thinking` 默认 medium；难活单独加 `--thinking high`（high 做小活容易乱翻文件、烧大量 token，别乱开）。
    - 长任务加 `--bg`：立刻打印 `run_id`，结果在 `$DISPATCH_HOME/status/<run_id>.json`；跑完读状态文件，勿反复轮询。
 5. **验收**：
    - 前台：输出 `OK <产物>` 且退出码 0 才算过；`FAIL: 原因` 表示越权被拦、额度不足、超时或产物缺失/为空。
