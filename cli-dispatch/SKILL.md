@@ -41,17 +41,17 @@ metadata:
 ## 步骤
 
 1. **拆解**：拆成单个可验收的小任务，任务书尽量短。
-2. **写任务书**：复制 `templates/TASK_TEMPLATE.md` 到 `$DISPATCH_HOME/tasks/<日期>-<短名>.md`，产物写**绝对路径**。简单任务可直接 `-p`。
-3. **选权限档**：
+2. **写任务书**：复制 `templates/TASK_TEMPLATE.md`（四段）到 `$DISPATCH_HOME/tasks/<日期>-<短名>.md`，产物写**绝对路径**。简单任务可直接 `-p`。
+3. **选权限档**（每次运行自动生成沙箱）：
    - `scan`：只读 `$HOME` 与 `DISPATCH_RO_ROOTS`，只写 `--out`。
    - `code <项目目录>`：只读写该项目，可跑测试/构建。
    - `write <产物目录>`：只读写该目录。
    - 硬拦：`curl`、`wget`、`sudo`、`git push`、`rm -r`；沙箱断网，仅连 `MAGPIE_ADDR`。
 4. **执行**：只走 `scripts/pi-run.sh`，不裸跑 `pi`：
-   - `$R --profile scan --out <目录> --task tasks/<文件>.md`
+   - `$R --profile scan --out <目录> --task tasks/<文件>.md`（`--task` 会把任务书里的产物当 `--expect`）
    - `$R --profile code <项目> -p '...' --expect <产物>`
-   - `--model flash`（默认）、`pro`、`claude`；完整 id 须写 `magpie/antigravity/...`。`--thinking` 默认 low。
-   - 长任务 `--bg`：打印 `run_id`，读 `$DISPATCH_HOME/status/<run_id>.json`。
+   - `--model flash`（默认）、`pro`、`claude`；完整 id 须写 `magpie/antigravity/...`。`--thinking` 默认 low；难活单独 `--thinking high`（小活别开 high，易乱翻文件、烧 token）。
+   - 长任务 `--bg`：打印 `run_id`，读 `$DISPATCH_HOME/status/<run_id>.json`；勿反复轮询。
 5. **验收**：
    - 前台：`OK` + 退出 0；`denied_actions` 非空即整次 FAIL。
    - 后台：看 status 的 `status`、`reason`、`artifacts`、`usage`。
