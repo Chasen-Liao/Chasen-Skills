@@ -19,7 +19,7 @@
 | 能力 | 说明 |
 | :--- | :--- |
 | **🧠 Bot 减负** | 远端 Agent 只做拆解、任务书、派活、验收 |
-| **⚡ Pi + Magpie** | 经本机网关吃 Antigravity 额度；短模型名 flash / pro / claude |
+| **⚡ Pi + Magpie** | 经本机网关吃 Antigravity 额度；短模型名 flash / pro / claude；`--thinking` 默认 medium，高质量任务用 high |
 | **🔒 三档权限** | `scan` / `code` / `write` + bwrap；断网后只连 Magpie |
 | **✅ 真验收** | JSON 模式解析 `denied_actions`、`--expect`、quota 闸门 |
 | **⏱️ 后台** | 最多 2 并发，`--bg` + `status/*.json` |
@@ -86,7 +86,10 @@ R="./scripts/pi-run.sh"
 "$R" --profile code ~/my-repo -p 'npm test 并修失败' --expect ~/my-repo/.pi-ok
 "$R" --profile scan --model pro --task "$DISPATCH_HOME/tasks/inventory.md"
 "$R" --profile scan --bg --task ./task.md   # 输出 run_id → status/<run_id>.json
+"$R" --profile code ~/my-repo --thinking high -p '大型重构并保证测试全绿' --expect ~/my-repo/ok.txt
 ```
+
+默认 `--thinking` 为 **medium**；任务复杂或要求高质量完成时加 **`--thinking high`**。
 
 完整参数见 [references/pi-run.md](./references/pi-run.md)。
 
@@ -109,6 +112,7 @@ R="./scripts/pi-run.sh"
 8) export DISPATCH_HOME=$HOME/.pi-dispatch && mkdir -p $DISPATCH_HOME/{tasks,out,logs,status,runs}
 9) 找到已安装的 cli-dispatch/scripts/pi-run.sh，执行：
    pi-run.sh --profile write "$DISPATCH_HOME/out" -p '在本目录写 ok.txt，内容为 ok' --expect "$DISPATCH_HOME/out/ok.txt"
+   （pi-run 默认 --thinking medium，一般冒烟不必改；复杂任务再加 --thinking high）
 
 验收标准：上一步退出码 0，标准输出含 OK，且 $DISPATCH_HOME/out/ok.txt 内容为 ok。把安装路径、magpie serve 是否在跑、以及冒烟完整输出回报给我。若任一步失败，说明原因并停，不要跳过沙箱或使用 --no-sandbox。
 ```
@@ -137,6 +141,7 @@ cli-dispatch/
 ### 0.3.0
 
 - 改为纯 **Pi + Magpie**：入库 `scripts/pi-run.sh` + `lib/`，`DISPATCH_HOME` 默认 `~/.pi-dispatch`，文档与一键安装提示。
+- Pi `--thinking` 默认 **medium**；复杂或高质量任务使用 **`--thinking high`**。
 
 ### 0.2.0
 

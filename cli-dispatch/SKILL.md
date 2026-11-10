@@ -50,7 +50,7 @@ metadata:
 4. **执行**：只走 `scripts/pi-run.sh`，不裸跑 `pi`：
    - `$R --profile scan --out <目录> --task tasks/<文件>.md`（`--task` 会把任务书里的产物当 `--expect`）
    - `$R --profile code <项目> -p '...' --expect <产物>`
-   - `--model flash`（默认）、`pro`、`claude`；完整 id 须写 `magpie/antigravity/...`。`--thinking` 默认 low；难活单独 `--thinking high`（小活别开 high，易乱翻文件、烧 token）。
+   - `--model flash`（默认）、`pro`、`claude`；完整 id 须写 `magpie/antigravity/...`。`--thinking` 默认 **medium**；复杂任务或要求高质量完成时用 **`--thinking high`**。
    - 长任务 `--bg`：打印 `run_id`，读 `$DISPATCH_HOME/status/<run_id>.json`；勿反复轮询。
 5. **验收**：
    - 前台：`OK` + 退出 0；`denied_actions` 非空即整次 FAIL。

@@ -31,7 +31,7 @@ DISPATCH_RO_ROOTS="${DISPATCH_RO_ROOTS:-}"
 DEFAULT_TIMEOUT="20m"
 DEFAULT_QUEUE_TIMEOUT="60m"
 DEFAULT_PROVIDER="${PI_RUN_PROVIDER:-magpie}"
-DEFAULT_THINKING="${PI_RUN_THINKING:-low}"
+DEFAULT_THINKING="${PI_RUN_THINKING:-medium}"
 GW_HELLO="${PI_RUN_GW:-http://${MAGPIE_ADDR}/api/hello}"
 QUOTA_FAIL_PCT="${PI_RUN_QUOTA_FAIL_PCT:-90}"
 
@@ -49,7 +49,7 @@ usage() {
   --expect PATH              结束后必须存在且非空的产物（可重复）
   --model NAME               flash（默认）、pro、claude，或完整 id（映射成 magpie/antigravity/…，避免落到 -tiered）
   --provider NAME            Pi provider，默认 magpie
-  --thinking LEVEL           off|minimal|low|medium|high|xhigh|max，默认 low（难活单独 --thinking high）
+  --thinking LEVEL           off|minimal|low|medium|high|xhigh|max，默认 medium（复杂/高质量任务用 high）
   --timeout DUR              执行超时（默认 20m；不含排队），如 20m / 60s / 1h
   --queue-timeout DUR        等锁上限（默认 60m），超时判 fail
   --sandbox                  默认已开启 bwrap 沙箱

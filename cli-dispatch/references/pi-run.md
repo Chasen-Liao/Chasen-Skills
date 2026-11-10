@@ -14,7 +14,7 @@
 | `MAGPIE_ADDR` | `127.0.0.1:3425` | 网关地址；沙箱内经 unix 转发连此地址 |
 | `PI_AGENT_DIR` | `~/.pi/agent` | Pi 配置目录；每轮复制到 run 目录，避免写回真目录 |
 | `DISPATCH_RO_ROOTS` | （空） | 冒号分隔的额外 **只读** 挂载根（替代以往写死的仓库根） |
-| `PI_RUN_THINKING` | `low` | 默认 `--thinking` |
+| `PI_RUN_THINKING` | `medium` | 默认 `--thinking`；复杂/高质量任务运行时加 `--thinking high` |
 | `PI_RUN_QUOTA_FAIL_PCT` | `90` | Gemini 5 小时窗口超过此百分比则 `FAIL: quota` |
 | `PI_RUN_LIB_DIR` | 脚本旁 `lib/` | `pi-netfwd.py` 与 `pi-wrappers/` |
 
@@ -35,8 +35,8 @@ R="/path/to/cli-dispatch/scripts/pi-run.sh"   # 或 skill 安装目录下
 # 只写产物目录
 "$R" --profile write "$DISPATCH_HOME/out" -p '在本目录写 result.txt，内容为 ok'
 
-# 模型短名：flash（默认）、pro、claude
-"$R" --profile write "$DISPATCH_HOME/out" --model pro -p '...'
+# 模型短名：flash（默认）、pro、claude；默认 --thinking medium，复杂/高质量任务加 --thinking high
+"$R" --profile write "$DISPATCH_HOME/out" --model pro --thinking high -p '...'
 
 # 后台：立刻打印 run_id
 "$R" --profile scan --bg --task ./task.md
