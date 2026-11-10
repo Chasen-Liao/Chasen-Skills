@@ -8,7 +8,7 @@
 ![Executor](https://img.shields.io/badge/Primary-Pi_via_Magpie-0ea5e9?style=flat-square)
 ![Model](https://img.shields.io/badge/Model-gemini--3.8--flash-4285f4?style=flat-square&logo=google&logoColor=white)
 ![Safety](https://img.shields.io/badge/Permissions-scan_·_code_·_write-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.2.0-7c3aed?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.2.1-7c3aed?style=flat-square)
 
 </p>
 
@@ -87,6 +87,10 @@ cli-dispatch/
 ---
 
 ## Changelog
+
+### 0.2.1
+
+- Pi `--thinking` 默认从 low 改为 medium；难活单独加 `--thinking high`，小活别开 high（容易乱翻文件、烧 token）。
 
 ### 0.2.0
 
