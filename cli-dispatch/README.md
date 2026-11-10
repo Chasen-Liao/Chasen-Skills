@@ -6,7 +6,7 @@
 
 ![Executor](https://img.shields.io/badge/Executor-pi_--p-0ea5e9?style=flat-square)
 ![Thinking](https://img.shields.io/badge/thinking-medium-64748b?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.4.0-7c3aed?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.5.0-7c3aed?style=flat-square)
 
 </p>
 
@@ -84,6 +84,10 @@ cli-dispatch/
 ---
 
 ## Changelog
+
+### 0.5.0
+
+- Pi 跑完用 webhook 例行任务单独叫醒 Bot（只需一句 curl），派完立刻结束当前轮，每轮开头兜底查日志；任务说明加「自查一次就结束」。
 
 ### 0.4.0
 
