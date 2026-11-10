@@ -1,14 +1,14 @@
 # 🚦 cli-dispatch
 
-> Bot 只拆任务和验收，**重活交给本地 Pi（经 Magpie 用 Antigravity / Gemini 额度）** — 省 Grok Bot 额度；agy 作备用。
+> Bot 只拆任务和验收，**重活交给本地 Pi（经 Magpie 用 Antigravity / Gemini 额度）** — 省 Bot 额度；自带沙箱、`pi-run.sh` 开箱即用。
 
 <p>
 
 ![Shell](https://img.shields.io/badge/Wrapper-bash-4b5563?style=flat-square&logo=gnu-bash&logoColor=white)
-![Executor](https://img.shields.io/badge/Primary-Pi_via_Magpie-0ea5e9?style=flat-square)
+![Executor](https://img.shields.io/badge/Executor-Pi_+_Magpie-0ea5e9?style=flat-square)
 ![Model](https://img.shields.io/badge/Model-gemini--3.8--flash-4285f4?style=flat-square&logo=google&logoColor=white)
 ![Safety](https://img.shields.io/badge/Permissions-scan_·_code_·_write-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.2.0-7c3aed?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.3.0-7c3aed?style=flat-square)
 
 </p>
 
@@ -18,28 +18,54 @@
 
 | 能力 | 说明 |
 | :--- | :--- |
-| **🧠 Bot 减负** | 远端 Agent 只做拆解、任务书、派活、验收；执行走本地 CLI |
-| **⚡ Pi 为主** | 默认派 Pi（经 Magpie 网关），同样的代码修复 token 约为 agy 的 1/4；agy 兜底 |
-| **🔒 三档权限** | `scan` / `code` / `write`，每次运行自动生成沙箱，Pi 断网只连本地 Magpie |
-| **✅ 真验收** | 解析 headless JSON：`denied_actions`、产物、`--expect` 任一不过关即 `FAIL` |
-| **⏱️ 排队与后台** | Pi 并发 2、agy 并发 1，`--bg` + `status/*.json`，适合长任务 |
-| **📉 额度闸门** | 运行前查 `magpie quota`，5 小时窗口超 90% 直接 `FAIL: quota` |
-| **🏠 可配置根目录** | `DISPATCH_HOME`（默认 `~/.agy-dispatch`），无写死个人路径 |
+| **🧠 Bot 减负** | 远端 Agent 只做拆解、任务书、派活、验收 |
+| **⚡ Pi + Magpie** | 经本机网关吃 Antigravity 额度；短模型名 flash / pro / claude |
+| **🔒 三档权限** | `scan` / `code` / `write` + bwrap；断网后只连 Magpie |
+| **✅ 真验收** | JSON 模式解析 `denied_actions`、`--expect`、quota 闸门 |
+| **⏱️ 后台** | 最多 2 并发，`--bg` + `status/*.json` |
+| **📉 额度闸门** | Gemini 5h 窗口 >90% 直接 `FAIL: quota` |
+| **🏠 DISPATCH_HOME** | 默认 `~/.pi-dispatch`，无写死个人路径 |
 
 ---
 
 ## 🚀 安装
 
+按顺序执行：
+
 ```bash
+# 1. Pi
+curl -fsSL https://pi.dev/install.sh | sh
+
+# 2. Magpie
+curl -fsSL https://usemagpie.ai/install.sh | sh
+
+# 3. Antigravity 账号（经 Magpie 接入，非 agy CLI）
+# ⚠️ Google 可能停用「在 Antigravity 产品外」使用的账号，请用备用 Google 账号
+magpie accounts add antigravity
+
+# 4. 网关（仅本机，不要 --lan / --web）
+magpie serve
+
+# 5. Pi 侧 Magpie 扩展
+pi install npm:pi-magpie
+
+# 6. 沙箱依赖
+# Debian/Ubuntu: sudo apt install bubblewrap
+# macOS: brew install bubblewrap
+
+# 7. 本 skill
 npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
+
+# 8. 工作目录
+export DISPATCH_HOME="${DISPATCH_HOME:-$HOME/.pi-dispatch}"
+mkdir -p "$DISPATCH_HOME"/{tasks,out,logs,status,runs}
+
+# 9. 冒烟（将 SKILL_ROOT 换成你的 skill 安装路径，或在仓库根目录用 ./cli-dispatch/...）
+SKILL_ROOT="$(pwd)"   # 示例：克隆仓库后
+"$SKILL_ROOT/cli-dispatch/scripts/pi-run.sh" --profile write "$DISPATCH_HOME/out" \
+  -p '在本目录写 ok.txt，内容为 ok' --expect "$DISPATCH_HOME/out/ok.txt"
+# 期望最后一行含 OK，退出码 0
 ```
-
-**前置**
-
-1. 安装 **Pi**，本机启动 **Magpie** 网关并用 Antigravity 账号登录；准备 `pi-run.sh` 包装脚本（暂不在本仓库，参数与 `agy-run.sh` 一致）。
-2. 备用：按 **Antigravity 官方文档** 安装 **agy** 并登录。
-3. 可选：`export DISPATCH_HOME="$HOME/.agy-dispatch"`，`mkdir -p "$DISPATCH_HOME"/{tasks,out,logs,status,runs}`。
-4. 无头环境：确保 dbus/keyring 可用，或设置 `AGY_XDG_RUNTIME_DIR` / `AGY_DBUS_SESSION_BUS_ADDRESS`。
 
 ---
 
@@ -47,29 +73,45 @@ npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
 
 ### 在 Agent 中（推荐）
 
-对 Grok Bot / Pi 说：
+> `这个大改动按 cli-dispatch 派给 Pi` / `写任务书让本地 pi-run 扫盘`
 
-> `这个大改动别你自己啃，按 cli-dispatch 派给 Pi` / `写任务书让本地 CLI 扫盘`
-
-Agent 会读 `SKILL.md`，按四段模板写任务书并调用 `pi-run.sh`；Pi 不行时改用 `scripts/agy-run.sh`。
+Agent 读 `SKILL.md`，写四段任务书，调用 `scripts/pi-run.sh`。
 
 ### 命令行示例
 
 ```bash
-# 主力：Pi（经 Magpie）
-pi-run.sh --profile code ~/my-repo -p 'npm test 并修失败' --expect ~/my-repo/.pi-ok
-pi-run.sh --profile scan --model pro --task "$DISPATCH_HOME/tasks/2026-11-10-inventory.md"
+export DISPATCH_HOME="${DISPATCH_HOME:-$HOME/.pi-dispatch}"
+R="./scripts/pi-run.sh"
 
-# 备用：agy；SKILL_ROOT 指向本 skill 安装目录（由 npx skills 决定）
-R="./scripts/agy-run.sh"   # 在 skill 根目录下执行时
-export DISPATCH_HOME="${DISPATCH_HOME:-$HOME/.agy-dispatch}"
-
-"$R" --profile scan --task "$DISPATCH_HOME/tasks/2026-11-10-inventory.md"
-"$R" --profile code ~/my-repo -p 'npm test 并修失败' --expect ~/my-repo/.agy-ok
-"$R" --profile scan --bg --task ./task.md   # 输出 run_id，查 $DISPATCH_HOME/status/<run_id>.json
+"$R" --profile code ~/my-repo -p 'npm test 并修失败' --expect ~/my-repo/.pi-ok
+"$R" --profile scan --model pro --task "$DISPATCH_HOME/tasks/inventory.md"
+"$R" --profile scan --bg --task ./task.md   # 输出 run_id → status/<run_id>.json
 ```
 
-详细参数与档位说明见 [references/agy-run.md](./references/agy-run.md)。
+完整参数见 [references/pi-run.md](./references/pi-run.md)。
+
+---
+
+## 一键同款：发给你的 Bot
+
+把下面整段复制给你的 Agent（Cursor / Pi / Claude 等），让它在本机端到端装好并跑通冒烟；**遇到 Google 登录时停下来请你操作**；只有冒烟打出 `OK` 才算完成。
+
+```text
+请在本机按 cli-dispatch skill 完成 Pi + Magpie 派活环境的一键安装与验收（仓库 Chasen-Liao/Chasen-Skills，skill 名 cli-dispatch）。严格按顺序：
+
+1) curl -fsSL https://pi.dev/install.sh | sh
+2) curl -fsSL https://usemagpie.ai/install.sh | sh
+3) 运行 magpie accounts add antigravity；出现 Google 登录或浏览器授权时立即停止，提示我完成登录后再继续
+4) 在后台或独立终端运行 magpie serve（仅本机，禁止 --lan 与 --web）
+5) pi install npm:pi-magpie
+6) 安装 bubblewrap（Linux: apt install bubblewrap；macOS: brew install bubblewrap）
+7) npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
+8) export DISPATCH_HOME=$HOME/.pi-dispatch && mkdir -p $DISPATCH_HOME/{tasks,out,logs,status,runs}
+9) 找到已安装的 cli-dispatch/scripts/pi-run.sh，执行：
+   pi-run.sh --profile write "$DISPATCH_HOME/out" -p '在本目录写 ok.txt，内容为 ok' --expect "$DISPATCH_HOME/out/ok.txt"
+
+验收标准：上一步退出码 0，标准输出含 OK，且 $DISPATCH_HOME/out/ok.txt 内容为 ok。把安装路径、magpie serve 是否在跑、以及冒烟完整输出回报给我。若任一步失败，说明原因并停，不要跳过沙箱或使用 --no-sandbox。
+```
 
 ---
 
@@ -77,26 +119,34 @@ export DISPATCH_HOME="${DISPATCH_HOME:-$HOME/.agy-dispatch}"
 
 ```text
 cli-dispatch/
-├── SKILL.md                 # Agent 执行契约
-├── README.md                # 本文件
-├── scripts/agy-run.sh       # agy 备用包装入口（固定模型、权限、验收）
+├── SKILL.md
+├── README.md
+├── scripts/
+│   ├── pi-run.sh
+│   └── lib/
+│       ├── pi-netfwd.py
+│       └── pi-wrappers/   # curl git rm sudo wget
 ├── templates/TASK_TEMPLATE.md
-└── references/agy-run.md    # 脚本说明与示例
+└── references/pi-run.md
 ```
 
 ---
 
 ## Changelog
 
+### 0.3.0
+
+- 入库通用 `scripts/pi-run.sh` + `lib/`（bwrap、Magpie 转发、wrapper、quota、status JSON）。
+- 移除 agy / Antigravity CLI 备用路径；仅保留 `magpie accounts add antigravity`。
+- `DISPATCH_HOME` 默认改为 `~/.pi-dispatch`；文档中文化与一键安装提示。
+
 ### 0.2.0
 
-- 执行主力改为 **Pi（经 Magpie 网关用 Antigravity 额度，Gemini 3.8 Flash）**，agy 降为备用。
-- 新增：Pi 模型档（flash / pro / claude）与完整 id 写法、额度闸门（`magpie quota`，>90% 直接 FAIL）、并发与超时默认值、越权一次即整次 FAIL。
-- `pi-run.sh` 暂未入库（依赖本机沙箱环境），参数与 `agy-run.sh` 一致。
+- 执行主力改为 Pi（经 Magpie）；agy 为备用（已在 0.3.0 移除）。
 
 ### 0.1.0
 
-- 首版：从个人 dispatch 工作流通用化入库；`DISPATCH_HOME`、可配置 scan 可读目录、PATH 解析 `agy`。
+- 首版 dispatch 工作流通用化。
 
 ---
 
