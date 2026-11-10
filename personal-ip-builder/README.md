@@ -1,148 +1,130 @@
-# 🎨 personal-ip-builder
+# personal-ip-builder
 
-> 从一张喜欢的动漫参考图，打造**一整套**可长期复用的个人 IP 数字资产，并可选沉淀成教程配图 Skill。
+从照片或喜欢的角色参考图，做出可长期复用的**个人 IP 数字资产卡**，并默认打包成专属配图 Skill。
 
 <p>
 
 ![Category](https://img.shields.io/badge/Category-workflow-7c3aed?style=flat-square)
-![Output](https://img.shields.io/badge/Output-IP_pack_+_optional_skill-f59e0b?style=flat-square)
-![Style](https://img.shields.io/badge/Style-white_bg_·_ink_line-0ea5e9?style=flat-square)
+![Output](https://img.shields.io/badge/Output-数字资产卡_+_配图_skill-f59e0b?style=flat-square)
+![Style](https://img.shields.io/badge/Style-浅底_·_手绘线稿-0ea5e9?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.1.0-64748b?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.2.0-64748b?style=flat-square)
 
 </p>
 
 ---
 
-## ✨ 这是什么？
+## 这是什么？
 
-很多人做个人 IP 的第一反应是：「帮我画一个好看的动漫头像。」
+很多人做个人 IP 的第一反应是「帮我画一个好看的动漫头像」。头像只解决「我长什么样」。
 
-头像只解决「我长什么样」。这个 Skill 解决的是：**参考图只给情绪与方向，产出一套能反复调用的原创数字资产。**
-
-| 问题 | 交付 |
-| :--- | :--- |
-| 我代表什么内容？ | 角色设计契约 `character-contract.md` |
-| 观众第一眼记住什么？ | 固定配件 + 品牌符号 |
-| 教程/文章里怎么行动？ | 表情动作 + 内容场景（角色必须在做事） |
-| 换场景还能不能一致？ | 角色设定板 + 视觉规范板 |
-| 以后能不能只给一句话出图？ | 可选：repo-only 教程配图 Skill |
-
-方法来自 Chasen 的实操长文：[用 Codex 打造自媒体 IP 形象全流程](https://x.com/chasen_liao/status/2079467790252294636)。
+本 Skill 的目标是把参考图或照片变成**可派生一切应用图的视觉真源**：定稿锁定后，产出角色设定卡、视觉规范卡、契约、透明头像与静态表情，并生成带内置 `assets/` 的专属配图 Skill。封面、背景图、场景图留在配图 Skill 里按需出，不在开场批量交齐。
 
 ---
 
-## 📦 两层交付
-
-| 层 | 你得到什么 | 何时停 |
-| :--- | :--- | :--- |
-| **第一层 · 数字资产** | 设定板、视觉规范板、头像、全身立绘、表情与动作、内容场景、贴纸、横版主视觉，外加 `character-contract.md` | 只要资产就可以停 |
-| **第二层 · 教程配图 Skill** | 放在项目 `.agents/skills/` 的 repo-only skill，**引用**资产路径，不复制 PNG | 资产稳定，且你明确要求之后 |
-
----
-
-## ✨ 特性
+## 特性
 
 | 能力 | 说明 |
 | :--- | :--- |
-| **🎙️ 一次一问** | 优先 `grill-me`，每题给推荐答案和理由，先定位再外观 |
-| **🖼️ 整套资产** | 设定板 → 规范板 → 头像 → 立绘 → 表情动作 → 场景 → 贴纸 → 横版主视觉 |
-| **✏️ 白底线稿** | 纯白背景、深灰手绘线稿、清爽平涂；单图只讲一个核心意思 |
-| **🎭 角色在做事** | 角色是动作主体，不站成证件照，也不把多场景拼成多格大图 |
-| **🔧 定向修复** | 出问题只改一个变量，不全盘重抽 |
-| **📚 教程配图** | 第二层 skill 引用契约与资产，避免 PNG 双份版本 |
+| **每轮 3～5 问** | 不再 11 轮一次一问；信息够了就停 |
+| **最多 3 张定稿** | 用户锁定 master 后才出资产卡 |
+| **核心资产卡** | 三视图设定卡 + 规范卡 + 契约 + 透明头像与 4～6 静态表情 |
+| **配图 Skill** | 默认把参考图复制进 `<name>-ip-illustrations/assets/`，相对路径引用 |
+| **GIF 外置** | 动态表情交给可选外部 GIF skill，本包不做 |
 
 ---
 
-## 🚀 安装
+## 安装
 
 ```bash
 npx skills add Chasen-Liao/Chasen-Skills --skill personal-ip-builder --global --yes
 ```
 
-推荐同时安装访谈技能（仅当前仓库，不要 `-g`）：
-
-```bash
-npx skills@latest add mattpocock/skills
-# 交互只选 grill-me + 当前 Project
-```
-
-前置：当前环境能看参考图，并具备**带参考图输入**的图像生成。没有生图能力时，只交付契约和提示词。
+前置：当前环境能看参考图，并具备**带参考图输入**的图像生成（推荐 Codex image）。没有生图能力时，只交付契约与提示词。
 
 ---
 
-## 🗣️ 怎么用
+## 怎么用
 
-1. 准备一张你喜欢的参考图（只借情绪和方向，不复刻原角色）
-2. 对 Agent 说：`用 personal-ip-builder 帮我从这张参考图打造个人 IP 数字资产`
-3. 一次回答一个设计问题，确认「角色设计契约」
-4. Agent 先出设定板，过关后再扩展整套资产并归档
-5. 需要教程配图时再说：`基于这套资产创建教程配图 skill`
+1. 准备一张照片或喜欢的角色图（只借气质与方向，不复刻原角色）
+2. 对 Agent 说：`用 personal-ip-builder 帮我做个人 IP 数字资产卡`
+3. 每轮回答 3～5 个打包问题，试最多 3 张定稿并锁定 master
+4. Agent 按 master 出核心资产卡，并生成专属配图 Skill 文件夹
 
-也可直接：`/personal-ip-builder`、`打造个人IP`、`从参考图做角色资产`。
+也可：`/personal-ip-builder`、`打造个人IP`、`做角色设定卡`、`数字资产卡`。
 
 ---
 
-## 🔄 工作流
+## 工作流
 
 ```text
-检查工作区 → 读参考图 → grill-me 设计访谈
-    → 输出契约并等人确认
-    → 先设定板，再扩展整套资产
-    → 检查与定向修复
-    → （可选）repo-only 教程配图 skill
+读参考 → 每轮 3～5 问 → 最多 3 张定稿 → 锁定 master
+    → 核心资产卡 → 专属配图 skill（assets/ 内置参考图）
 ```
 
 | 阶段 | 做什么 |
 | :--- | :--- |
-| 0 工作区 | 看 skills 目录、素材路径、`grill-me`、生图能力 |
-| 1 参考图 | 只提取情绪、比例、配色记忆、动作感 |
-| 2 访谈 | 一次一问，临时契约跨轮不丢 |
-| 3 契约 | 写清身份、外观、配件、色彩、动作；**确认前不生图** |
-| 4 资产 | 设定板不过关，不批量头像/表情/贴纸 |
-| 5 修复 | 每次只改一个主因 |
-| 6 配图 skill | 引用 `character-contract.md` 与资产路径 |
+| 0 工作区 | 素材路径、生图能力 |
+| 1 参考图 | 提取可借视觉语言，标出必须原创化的部分 |
+| 2 访谈 | 每轮 3～5 题，不问封面/场景制作清单 |
+| 3 定稿 | 最多 3 张候选，锁定后才继续 |
+| 4 资产卡 | 设定卡、规范卡、契约、头像、静态表情 |
+| 5 配图 skill | 参考图进 `assets/`，不写死具体画幅比例 |
 
 ---
 
-## 📦 输出目录示例
+## 输出目录示例
 
 ```text
-03-Assets/2026-10-23-my-ip-personal-ip/
+03-Assets/2026-11-09-my-ip-personal-ip/
 ├── character-contract.md
-├── 01-角色设定/          # 设定板、视觉规范板、横版主视觉
-├── 02-头像与立绘/
-├── 03-表情与动作/        # 4–6 个状态
-├── 04-内容场景/
-└── 05-贴纸与装饰/
+├── 01-数字资产卡/
+│   ├── 角色设定卡.png
+│   └── 视觉规范卡.png
+└── 02-头像与表情/
+    ├── 头像-透明.png
+    └── 表情-01～06-透明.png
+
+<name>-ip-illustrations/          # 默认可直接入库的配图 skill
+├── SKILL.md
+├── character-contract.md
+└── assets/                       # 设定卡、规范卡、头像、表情
 ```
 
-修订不覆盖旧版，用 `-v2`、`-v3`。个人 PNG 留在你的素材目录，不进入本 skill 仓库。
+修订不覆盖旧版，用 `-v2`、`-v3`。
 
 ---
 
-## 📂 目录
+## 目录
 
 ```text
 personal-ip-builder/
-├── SKILL.md                         # Agent 执行契约
-├── README.md                        # 本文件
+├── SKILL.md
+├── README.md
 └── references/
-    ├── asset-checklist.md           # 整套资产验收清单
-    └── design-interview.md          # 设计访谈问题顺序
+    ├── character-contract.md    # 契约模板
+    ├── asset-checklist.md       # 核心资产验收
+    └── design-interview.md      # 每轮 3～5 问问题包
 ```
 
 ---
 
-## 🚧 边界
+## Changelog
 
-- 参考图不是复刻模板：禁止照搬原角色的脸、服装、构图、Logo
-- 契约未确认，不批量生图
-- 单图单核心；白底、深灰线稿；角色必须在做事
-- 第二层 skill 只引用资产，不复制 PNG，也不拷贝他人 IP 的案例构图
+- **0.2.0**：聚焦数字资产卡真源；每轮 3～5 问、最多 3 张定稿；核心产出缩为设定卡/规范卡/契约/透明头像与静态表情；默认生成 assets 内置的专属配图 skill；开场不做封面/场景/GIF。
+- **0.1.0**：从动漫参考图做整套数字资产（含场景/贴纸/主视觉），可选 repo-only 教程配图 skill。
 
 ---
 
-## 📄 License
+## 边界
+
+- 参考图不是复刻模板
+- 未锁定 master，不出资产卡
+- 开场不制作封面、背景图、场景图
+- 个人 PNG 留在你的项目目录；本仓库只放 skill 模板与参考文档
+
+---
+
+## License
 
 MIT © Chasen-Liao

@@ -1,4 +1,4 @@
 interface:
   display_name: "Chasen 教程配图"
   short_description: "用 Chasen 个人 IP 生成统一风格的中文教程配图"
-  default_prompt: "Use $chasen-ip-tutorial-illustrations to generate a single 16:9 Chasen IP tutorial illustration."
+  default_prompt: "Use $chasen-ip-tutorial-illustrations to generate a Chasen IP tutorial illustration."
