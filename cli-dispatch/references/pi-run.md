@@ -43,8 +43,10 @@ export PI_MODEL=codex/gpt-5.5-codex   # 换成你 Magpie 里可用的 id
 | `MAGPIE_BIN` | `command -v magpie` | Magpie CLI（`quota` 等） |
 | `MAGPIE_ADDR` | `127.0.0.1:3425` | 网关地址；沙箱内经 unix 转发连此地址 |
 | `PI_MODEL` / `PI_RUN_MODEL` | （无） | 未传 `--model` 时使用；**必填其一**（或每次 `--model`） |
+| `PI_MODEL_ALIASES` | （无） | 逗号分隔的模型别名映射（`短名=完整id`）；优先查表映射，未设置时行为不变 |
+| `DISPATCH_EXPECT_ROOTS` | `workspace,tmp,home,Users,var` | 逗号分隔路径前缀列表，供 `--task` 提取任务书产物路径作 `--expect` |
 | `PI_AGENT_DIR` | `~/.pi/agent` | Pi 配置目录；每轮复制到 run 目录，避免写回真目录 |
-| `DISPATCH_RO_ROOTS` | （空） | 冒号分隔的额外 **只读** 挂载根 |
+| `DISPATCH_RO_ROOTS` | （空） | 冒号分隔的额外 **只读** 挂载根；工作区不在 `$HOME` 下时必须设 `DISPATCH_RO_ROOTS`，否则沙箱内不可见 |
 | `PI_RUN_THINKING` | `medium` | 默认 `--thinking`；复杂/高质量任务运行时加 `--thinking high` |
 | `PI_RUN_QUOTA_FAIL_PCT` | `90` | 若 quota 中存在 Gemini 5 小时窗口，超过此百分比则 `FAIL: quota` |
 | `PI_RUN_LIB_DIR` | 脚本旁 `lib/` | `pi-netfwd.py` 与 `pi-wrappers/` |
@@ -86,6 +88,17 @@ R="/path/to/cli-dispatch/scripts/pi-run.sh"   # 或 skill 安装目录下
 | `write` | 产物目录 RW | `read,ls,grep,find,write,edit` | 无 bash |
 
 沙箱默认 **开**：`--unshare-net`，仅 Magpie 端口经 `pi-netfwd.py` 可达。缺 **bubblewrap** 时直接失败（不要用 `--no-sandbox` 凑合）。
+
+### 沙箱与运行环境说明
+
+- **沙箱 PATH 与运行时**：调用方 PATH 会原样传进沙箱，要包含 node/npm 等运行时（若调用方 PATH 缺少运行时，沙箱内执行测试或构建可能报找不到命令）。
+- **工作区与只读根**：沙箱内默认只读挂载 `$HOME`。工作区不在 `$HOME` 下时必须设 `DISPATCH_RO_ROOTS`（例如冒号分隔挂载对应目录），否则沙箱内对该路径不可见。
+- **模型别名（`PI_MODEL_ALIASES`）**：支持逗号分隔的短名映射，例如：
+  ```bash
+  export PI_MODEL_ALIASES="flash=magpie/antigravity/gemini-3.8-flash,pro=magpie/antigravity/gemini-pro-agent"
+  ```
+  设置后可直接传 `--model flash` 或 `export PI_MODEL=flash`，命中后使用完整 id 并走现有补全逻辑。
+- **任务产物根前缀（`DISPATCH_EXPECT_ROOTS`）**：`--task` 从任务书「成功标准」提取路径时，正则默认匹配 `workspace,tmp,home,Users,var` 前缀；如需适配其他根路径（例如 `/opt` 或 `/srv`），可设置该环境变量覆盖。
 
 ## 状态 JSON 字段
 

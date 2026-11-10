@@ -8,7 +8,7 @@
 ![Executor](https://img.shields.io/badge/Executor-Pi_+_Magpie-0ea5e9?style=flat-square)
 ![Model](https://img.shields.io/badge/Model-via_PI__MODEL-64748b?style=flat-square)
 ![Safety](https://img.shields.io/badge/Permissions-scan_·_code_·_write-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.3.0-7c3aed?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.3.1-7c3aed?style=flat-square)
 
 </p>
 
@@ -145,6 +145,13 @@ cli-dispatch/
 ---
 
 ## Changelog
+
+### 0.3.1
+
+- 判定 heredoc 改用 `transport_fail_texts(events, err)`，仅提取 Pi 自身错误事件与 stderr，避免工具输出或模型正文误触发认证/网络失败判定。
+- `resolve_model()` 优先读取环境变量 `PI_MODEL_ALIASES`（逗号分隔 `短名=完整id`）进行短名映射，命中后走现有补全逻辑。
+- `--task` 自动提取产物路径的正则支持通过环境变量 `DISPATCH_EXPECT_ROOTS`（逗号分隔）配置前缀，默认 `workspace,tmp,home,Users,var`。
+- 文档补充 `PI_MODEL_ALIASES`、`DISPATCH_EXPECT_ROOTS` 说明，强调调用方 PATH 原样传进沙箱需包含 node/npm 等运行时，以及工作区不在 `$HOME` 下时必须设 `DISPATCH_RO_ROOTS`。
 
 ### 0.3.0
 

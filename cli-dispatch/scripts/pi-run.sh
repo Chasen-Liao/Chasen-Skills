@@ -102,6 +102,22 @@ resolve_model() {
     echo "pi-run: 需要 --model 或环境变量 PI_MODEL（Magpie 模型 id，如 codex/gpt-5.5-codex；可用 magpie models 或网关模型列表查看）" >&2
     exit 2
   fi
+  if [[ -n "${PI_MODEL_ALIASES:-}" ]]; then
+    local entry k v
+    local old_ifs="$IFS"
+    IFS=','
+    for entry in $PI_MODEL_ALIASES; do
+      entry="${entry#"${entry%%[! ]*}"}"
+      entry="${entry%"${entry##*[! ]}"}"
+      k="${entry%%=*}"
+      v="${entry#*=}"
+      if [[ "$k" == "$raw" && "$entry" == *"="* ]]; then
+        raw="$v"
+        break
+      fi
+    done
+    IFS="$old_ifs"
+  fi
   case "$raw" in
     magpie/*)
       printf '%s\n' "$raw"
@@ -349,7 +365,7 @@ if [[ -n "$TASK_FILE" ]]; then
     PROMPT="$(cat "$prompt_file")"
   fi
   mapfile -t TASK_EXPECTS < <(python3 - "$TASK_FILE" <<'PY'
-import re, sys
+import os, re, sys
 from pathlib import Path
 text = Path(sys.argv[1]).read_text(encoding="utf-8")
 parts = re.split(r"(?m)^##\s+", text)
@@ -364,7 +380,10 @@ paths = []
 for m in re.finditer(r"(?m)产物路径\s*[:：]\s*`?(\S+?)`?\s*$", section):
     paths.append(m.group(1).strip("。.;，,"))
 if not paths:
-    for m in re.finditer(r"(?<![A-Za-z0-9_])(/(?:tmp|home|Users|var)[^\s`）)\]\"']+)", section):
+    roots = os.environ.get("DISPATCH_EXPECT_ROOTS", "workspace,tmp,home,Users,var")
+    root_alt = "|".join(re.escape(s.strip().lstrip("/")) for s in roots.split(",") if s.strip())
+    pat = rf"(?<![A-Za-z0-9_])(/(?:{root_alt})[^\s`）)\]\"']+)"
+    for m in re.finditer(pat, section):
         p = m.group(1).rstrip("。.;，,")
         if p not in paths:
             paths.append(p)
@@ -953,7 +972,27 @@ elif pi_rc != 0:
 if denied_actions:
     reasons.append("FAIL: denied " + ", ".join(denied_actions))
 
-blob = (raw + "\n" + err).lower()
+def transport_fail_texts(events, stderr_text):
+    # Only Pi's own error signals + stderr; never tool results or model text.
+    texts = []
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        if ev.get("type") == "error":
+            texts.append(json.dumps(ev, ensure_ascii=False))
+        if ev.get("type") in ("auto_retry_start", "auto_retry_end"):
+            for k in ("errorMessage", "finalError"):
+                if ev.get(k):
+                    texts.append(str(ev[k]))
+        msg = ev.get("message")
+        if isinstance(msg, dict) and msg.get("role") == "assistant":
+            if msg.get("stopReason") in ("error", "aborted") or msg.get("errorMessage"):
+                texts.append(str(msg.get("errorMessage") or msg.get("stopReason")))
+    if stderr_text:
+        texts.append(stderr_text)
+    return "\n".join(texts)
+
+blob = transport_fail_texts(events, err).lower()
 for needle, label in (
     ("not signed in", "not signed in"),
     ("unauthorized", "unauthorized"),
