@@ -33,7 +33,7 @@
 | **🎨 [personal-ip-builder](./personal-ip-builder/README.md)** | 照片或参考图 → **锁定定稿后出数字资产卡**，默认打包专属配图 skill | 做个人 IP 真源 / 配图 skill | [→ README](./personal-ip-builder/README.md) |
 | **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖**；人味优先，口播观点默认不套爆款公式 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面** 三种模式；画幅由出图时指定 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
-| **🚦 [cli-dispatch](./cli-dispatch/README.md)** | Bot 只拆任务与验收，**重活派给本地 agy**（Gemini 订阅），三档权限 + 真验收 | 省 Bot 额度 / 共用电脑执行 | [→ README](./cli-dispatch/README.md) |
+| **🚦 [cli-dispatch](./cli-dispatch/README.md)** | Bot 只拆任务与验收，**重活派给本地 Pi（经 Magpie）**，agy 备用，三档权限 + 真验收 | 省 Bot 额度 / 共用电脑执行 | [→ README](./cli-dispatch/README.md) |
 
 > 💡 每个 Skill 目录下都有独立 `README.md`，介绍**做什么、怎么装、怎么用**；`SKILL.md` 是给 Agent 看的执行契约。
 
@@ -77,7 +77,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 | `personal-ip-builder` | `打造个人IP` / `做角色设定卡` / `数字资产卡` / `/personal-ip-builder` |
 | `chasen-x-writing` | `把这段口播写成帖` / `按我的口吻改这篇` / `$chasen-x-writing` |
 | `chasen-ip-tutorial-illustrations` | `用 Chasen 解释这个工作流` / `信息图` / `做封面` / `$chasen-ip-tutorial-illustrations` |
-| `cli-dispatch` | `派给 agy` / `按 cli-dispatch 写任务书` / `本地 CLI 执行` |
+| `cli-dispatch` | `派给 Pi` / `派给 agy` / `按 cli-dispatch 写任务书` / `本地 CLI 执行` |
 
 ---
 
@@ -125,7 +125,7 @@ Chasen-Skills/
 │   ├── agents/openai.yaml
 │   └── assets/chasen-ip/
 │
-├── cli-dispatch/                # Bot 派活给本地 agy，三档权限与验收
+├── cli-dispatch/                # Bot 派活给本地 Pi（agy 备用），三档权限与验收
 │   ├── SKILL.md
 │   ├── README.md
 │   ├── scripts/agy-run.sh
