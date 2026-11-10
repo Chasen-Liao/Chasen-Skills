@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bot 一行入口：Pi 经本机 Magpie 调用 Antigravity（默认 Gemini 3.8 Flash）。
+# Bot 一行入口：Pi 经本机 Magpie 网关调用已配置的订阅/API 模型。
 # 按档位用 bwrap 沙箱 + --tools 白名单，解析 --mode json 的 usage，按 denied / --expect 判成败。
 # 永远不加 --dangerously-skip-permissions。不改 Pi 全局默认模型。
 set -euo pipefail
@@ -47,7 +47,7 @@ usage() {
   --out DIR                  scan 的产物目录，默认 \$DISPATCH_HOME/out
   --task FILE                用任务书全文作为 prompt；成功标准里的绝对路径会作为默认 --expect
   --expect PATH              结束后必须存在且非空的产物（可重复）
-  --model NAME               flash（默认）、pro、claude，或完整 id（映射成 magpie/antigravity/…，避免落到 -tiered）
+  --model ID                 Magpie 模型 id（provider/model，如 codex/gpt-5.5-codex）；默认读 PI_MODEL
   --provider NAME            Pi provider，默认 magpie
   --thinking LEVEL           off|minimal|low|medium|high|xhigh|max，默认 medium（复杂/高质量任务用 high）
   --timeout DUR              执行超时（默认 20m；不含排队），如 20m / 60s / 1h
@@ -58,8 +58,8 @@ usage() {
   -h, --help                 显示本说明
 
 环境: DISPATCH_HOME（默认 ~/.pi-dispatch）、PI_BIN、MAGPIE_BIN、MAGPIE_ADDR（默认 127.0.0.1:3425）、
-PI_AGENT_DIR（默认 ~/.pi/agent）、DISPATCH_RO_ROOTS（冒号分隔的额外只读根，可选）。
-固定行为: 经 MAGPIE_ADDR 的 Magpie 网关调用 Pi；默认模型 magpie/antigravity/gemini-3.8-flash；
+PI_MODEL（默认 --model；Magpie 目录中的 provider/model）、PI_AGENT_DIR、DISPATCH_RO_ROOTS（冒号分隔只读根，可选）。
+固定行为: 经 MAGPIE_ADDR 的 Magpie 网关调用 Pi（--provider magpie，--model 为 Magpie 模型 id）；
 默认 --no-session --no-context-files --no-skills --no-prompt-templates --mode json；
 日志在 \$DISPATCH_HOME/logs/（每次运行只删除其中超过 14 天的文件）；
 最多同时 2 个并发。Gemini 5 小时窗口用量超过 90% 时直接 FAIL: quota。
@@ -89,26 +89,28 @@ iso_now() {
   date +%Y-%m-%dT%H:%M:%S%z | sed -E 's/([0-9]{2})([0-9]{2})$/\1:\2/'
 }
 
-map_model() {
-  local raw="${1:-flash}"
+resolve_model() {
+  local from_flag="${1:-}"
+  local raw=""
+  if [[ -n "$from_flag" ]]; then
+    raw="$from_flag"
+  elif [[ -n "${PI_MODEL:-}" ]]; then
+    raw="$PI_MODEL"
+  elif [[ -n "${PI_RUN_MODEL:-}" ]]; then
+    raw="$PI_RUN_MODEL"
+  else
+    echo "pi-run: 需要 --model 或环境变量 PI_MODEL（Magpie 模型 id，如 codex/gpt-5.5-codex；可用 magpie models 或网关模型列表查看）" >&2
+    exit 2
+  fi
   case "$raw" in
-    flash|gemini-3.8-flash|antigravity/gemini-3.8-flash|magpie/antigravity/gemini-3.8-flash)
-      printf '%s\n' "magpie/antigravity/gemini-3.8-flash"
-      ;;
-    pro|gemini-pro-agent|antigravity/gemini-pro-agent|magpie/antigravity/gemini-pro-agent)
-      printf '%s\n' "magpie/antigravity/gemini-pro-agent"
-      ;;
-    claude|claude-sonnet-4-6|antigravity/claude-sonnet-4-6|magpie/antigravity/claude-sonnet-4-6)
-      printf '%s\n' "magpie/antigravity/claude-sonnet-4-6"
-      ;;
     magpie/*)
       printf '%s\n' "$raw"
       ;;
-    antigravity/*)
+    */*)
       printf '%s\n' "magpie/$raw"
       ;;
     *)
-      printf '%s\n' "$raw"
+      printf '%s\n' "magpie/$raw"
       ;;
   esac
 }
@@ -123,7 +125,7 @@ PROFILE_DIR=""
 OUT_DIR=""
 TASK_FILE=""
 PROMPT=""
-MODEL_FLAG="flash"
+MODEL_FLAG=""
 PROVIDER="$DEFAULT_PROVIDER"
 BG=0
 USE_SANDBOX=1
@@ -319,10 +321,7 @@ if [[ -n "$TASK_FILE" && ! -f "$TASK_FILE" ]]; then
   exit 2
 fi
 
-MODEL="$(map_model "${MODEL_FLAG:-flash}")"
-if [[ -n "${PI_RUN_MODEL:-}" && "$MODEL_FLAG" == "flash" ]]; then
-  MODEL="$(map_model "$PI_RUN_MODEL")"
-fi
+MODEL="$(resolve_model "$MODEL_FLAG")"
 
 mkdir -p "$LOG_DIR" "$STATUS_DIR" "$RUNS_DIR" "$LOCK_DIR"
 find "$LOG_DIR" -mindepth 1 -maxdepth 1 -type f -mtime +14 -delete 2>/dev/null || true
