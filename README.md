@@ -35,7 +35,7 @@
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面** 三种模式；画幅由出图时指定 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
 | **🚦 [cli-dispatch](./cli-dispatch/README.md)** | Bot 只拆任务与验收，**重活直接派给本机 `pi -p`**，后台跑、自动唤醒、Bot 验收 | 省 Bot 额度 / 共用电脑执行 | [→ README](./cli-dispatch/README.md) |
 | **🔧 [grokbot-pi-setup](./grokbot-pi-setup/README.md)** | 教 Grok Bot **装 Pi + 接任意模型 + 配跑完自动唤醒**，端到端验收 | 第一次让 Bot 派活给 Pi | [→ README](./grokbot-pi-setup/README.md) |
-| **🚚 [grokbot-pi-dispatch](./grokbot-pi-dispatch/README.md)** | 通用派活法：**任务书五件事 → `pi -p` 后台跑 → webhook 叫醒 → Bot 验收** | 已配好 Pi 的任何 Grok Bot | [→ README](./grokbot-pi-dispatch/README.md) |
+| **🚚 [grokbot-pi-dispatch](./grokbot-pi-dispatch/README.md)** | 通用派活法：**任务书五件事 → `pi-task` 后台跑 → webhook 叫醒 → Bot 验收并 ack** | 已配好 Pi 的任何 Grok Bot | [→ README](./grokbot-pi-dispatch/README.md) |
 
 > 💡 每个 Skill 目录下都有独立 `README.md`，介绍**做什么、怎么装、怎么用**；`SKILL.md` 是给 Agent 看的执行契约。
 
