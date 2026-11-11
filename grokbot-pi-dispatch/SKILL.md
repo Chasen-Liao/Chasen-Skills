@@ -19,9 +19,10 @@ Bot 只做三件事：写任务、派给 Pi、验收。一两步的小事 Bot �
 用 Bot 自己的 Shell 工具**后台**运行（不阻塞等待），不要用 `nohup` 或 `&`：
 
 ```
-pi -p '<任务书>' --provider magpie --model <provider/model> --thinking medium --no-session --mode json > <日志目录>/<短名>.jsonl 2>&1 ; curl -s -X POST "$<BOT>_PI_NOTIFY_URL" -H "Authorization: Bearer $<BOT>_PI_NOTIFY_KEY" -H 'Content-Type: application/json' -d '{"name":"<短名>","log":"<日志目录>/<短名>.jsonl"}'
+pi -p '<任务书>' --provider <provider> --model <model> --thinking medium --no-session --mode json > <日志目录>/<短名>.jsonl 2>&1 ; curl -s -X POST "$<BOT>_PI_NOTIFY_URL" -H "Authorization: Bearer $<BOT>_PI_NOTIFY_KEY" -H 'Content-Type: application/json' -d '{"name":"<短名>","log":"<日志目录>/<短名>.jsonl"}'
 ```
 
+- `<provider>`、`<model>` 填 grokbot-pi-setup 里验收通过的那组。
 - 小活用 `--thinking medium`；难活才换更强的模型或加 `--thinking high`（小活开 high 会乱翻文件、烧 token）。
 - 只读的活加 `--tools read,ls,grep,find`。
 - 用到 MCP 的活，用 `--exclude-tools` 关掉删除、移动类工具。
