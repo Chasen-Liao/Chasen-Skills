@@ -4,7 +4,7 @@
 
 <p>
 
-![Skills](https://img.shields.io/badge/Skills-7-7c3aed?style=flat-square)
+![Skills](https://img.shields.io/badge/Skills-9-7c3aed?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-10b981?style=flat-square)
 ![npx skills](https://img.shields.io/badge/npx-skills-black?style=flat-square&logo=npm)
 ![Maintained](https://img.shields.io/badge/Maintained-by_Chasen-0ea5e9?style=flat-square)
@@ -34,6 +34,8 @@
 | **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖**；先说人话、读者一遍看懂，去 AI 味有数据支撑；口播观点默认不套爆款公式 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面** 三种模式；画幅由出图时指定 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
 | **🚦 [cli-dispatch](./cli-dispatch/README.md)** | Bot 只拆任务与验收，**重活直接派给本机 `pi -p`**，后台跑、自动唤醒、Bot 验收 | 省 Bot 额度 / 共用电脑执行 | [→ README](./cli-dispatch/README.md) |
+| **🔧 [grokbot-pi-setup](./grokbot-pi-setup/README.md)** | 教 Grok Bot **装 Pi + 用 Magpie 接自己的订阅 + 配跑完自动唤醒**，端到端验收 | 第一次让 Bot 派活给 Pi | [→ README](./grokbot-pi-setup/README.md) |
+| **🚚 [grokbot-pi-dispatch](./grokbot-pi-dispatch/README.md)** | 通用派活法：**任务书五件事 → `pi -p` 后台跑 → webhook 叫醒 → Bot 验收** | 已配好 Pi 的任何 Grok Bot | [→ README](./grokbot-pi-dispatch/README.md) |
 
 > 💡 每个 Skill 目录下都有独立 `README.md`，介绍**做什么、怎么装、怎么用**；`SKILL.md` 是给 Agent 看的执行契约。
 
@@ -55,6 +57,8 @@ npx skills add Chasen-Liao/Chasen-Skills --skill personal-ip-builder --global --
 npx skills add Chasen-Liao/Chasen-Skills --skill chasen-x-writing --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill chasen-ip-tutorial-illustrations --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
+npx skills add Chasen-Liao/Chasen-Skills --skill grokbot-pi-setup --global --yes
+npx skills add Chasen-Liao/Chasen-Skills --skill grokbot-pi-dispatch --global --yes
 ```
 
 安装后，Pi / Antigravity 会在全局 skills 目录自动发现该 Skill，无需额外配置。
@@ -78,6 +82,8 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 | `chasen-x-writing` | `把这段口播写成帖` / `按我的口吻改这篇` / `$chasen-x-writing` |
 | `chasen-ip-tutorial-illustrations` | `用 Chasen 解释这个工作流` / `信息图` / `做封面` / `$chasen-ip-tutorial-illustrations` |
 | `cli-dispatch` | `派给 Pi` / `按 cli-dispatch 写任务书` / `用 pi -p 派活` |
+| `grokbot-pi-setup` | `帮我配好 Pi 派活` / `按 grokbot-pi-setup 装一下` |
+| `grokbot-pi-dispatch` | 超过两三步的执行活自动读 / `派给 Pi` |
 
 ---
 
@@ -129,6 +135,14 @@ Chasen-Skills/
 │   ├── SKILL.md
 │   ├── README.md
 │   └── templates/TASK_TEMPLATE.md
+│
+├── grokbot-pi-setup/            # 教 Grok Bot 装 Pi + Magpie + 唤醒
+│   ├── SKILL.md
+│   └── README.md
+│
+├── grokbot-pi-dispatch/         # 通用派活：写任务 → pi -p → 唤醒 → 验收
+│   ├── SKILL.md
+│   └── README.md
 │
 └── docs/                        # 本地研究草稿（已 .gitignore，不入库）
 ```
