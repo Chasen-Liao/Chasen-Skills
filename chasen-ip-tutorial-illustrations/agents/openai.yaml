@@ -1,4 +1,4 @@
 interface:
-  display_name: "Chasen 教程配图"
-  short_description: "用 Chasen 个人 IP 生成统一风格的中文教程配图"
+  display_name: "Chasen IP 教程配图"
+  short_description: "用 Chasen 个人 IP 生成教程配图、高密度信息图与长文/商单封面"
   default_prompt: "Use $chasen-ip-tutorial-illustrations to generate a Chasen IP tutorial illustration."
