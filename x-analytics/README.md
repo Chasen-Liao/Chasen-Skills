@@ -18,11 +18,11 @@
 | 能力 | 说明 |
 | :--- | :--- |
 | **🕰️ 时间还原** | 用 Snowflake `id>>22` 还原发帖时间 → CST 小时分布，不依赖 CSV 的 `Date` 列 |
-| **🏷️ 话题 ROI** | 按 `topics.json` 自动分类，算条数 / 总曝光 / 均值 / 收藏率，一眼看出印钞话题 |
-| **⏰ 黄金时段** | 按小时聚合原创均值，标出 S/A/坑三档发帖窗口 |
-| **🔻 转化漏斗** | `曝光 → 详情 → 链接 → 主页 → 关注` 全链路转化率 |
-| **📈 自适应深度** | `<100条 lite（4图）/ ≥100条或跨7天 deep（6图，追加 字数散点 + Top10）` |
-| **📖 手册对标** | 结合 `references/handbook` 8章，按粉丝阶段（0-1k / 1k-3k / 3k+）给可执行清单 |
+| **🏷️ 话题 ROI** | 按 `topics.json` 自动分类，算条数 / 总曝光 / 均值 / 收藏 / 收藏率，一眼看出高价值话题 |
+| **⏰ 黄金时段** | 按小时聚合原创均值（优先过滤样本 `<5` 的时段），动态标出高均值与低均值窗口 |
+| **🔻 转化漏斗** | `曝光 → 详情 → 链接 → 主页 → 关注` 全链路转化率与主页关注转化 |
+| **📈 自适应深度** | `<100条且<=7天 lite（4图）/ 否则 deep（6图，追加 字数散点 + Top10 原创表与图）` |
+| **📖 手册对标** | 结合 `references/handbook/` 8 章，按粉丝阶段（0-1k / 1k-3k / 3k+）动态生成可执行清单 |
 
 ---
 
@@ -32,7 +32,13 @@
 npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 ```
 
-依赖：`Python 3.10+`，首次运行会自动安装 `matplotlib`（也可用 `uv pip install matplotlib` 预装）。
+依赖：`Python 3.10+`，运行前需安装绘图依赖：
+
+```bash
+pip install -r x-analytics/scripts/requirements.txt
+# 或使用 uv:
+uv pip install matplotlib numpy
+```
 
 ---
 
@@ -44,7 +50,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 
 > `分析一下这个 CSV` / `复盘一下 X 数据` / `看看黄金时段`
 
-Agent 会自动调用 `scripts/x-analyze.py` 并把报告总结给你。
+Agent 会自动调用 `scripts/x-analyze.py` 并把报告总结给你；若想把复盘洞察写成推文，可继续配合 `chasen-x-writing`。
 
 ### 命令行直接跑
 
@@ -67,12 +73,12 @@ python x-analytics/scripts/x-analyze.py "./xxx.csv" --out ./x-reports --topics .
 
 | 参数 | 说明 |
 | :--- | :--- |
-| `csv` | CSV 路径，不传则自动探测 `*.csv` |
+| `csv` | CSV 路径，不传则自动探测当前目录或 `Downloads/` 最新 CSV |
 | `--out` | 输出基目录，默认 `./x-reports/` |
 | `--followers` | 当前粉丝数，影响手册分阶段建议 |
-| `--niche` | 账号主方向，如 `AI` / `Vibe Coding`，影响词表选择 |
+| `--niche` | 账号主方向，如 `AI` / `Vibe Coding` / `通用`，影响预设词表选择 |
 | `--topics` | 自定义 `topics.json` 路径，优先级最高 |
-| `--deep` / `--lite` | 强制 6图 / 4图 |
+| `--deep` / `--lite` | 强制 6 图 / 4 图 |
 | `--yes` | 跳过交互询问，用默认值直接跑 |
 
 ---
@@ -85,14 +91,14 @@ x-reports/
     ├── 2026-08-21_2026-08-27-深度挖掘.md
     └── assets/
         ├── 01-daily.png      # 日趋势（总量+均值）
-        ├── 03-topic.png      # 话题 ROI
-        ├── 04-hourly.png     # 小时黄金档（CST）
-        ├── 05-funnel.png     # 转化漏斗
-        ├── 01-length.png     # 字数 vs 曝光（仅 deep）
+        ├── 02-topic.png      # 话题 ROI
+        ├── 03-hourly.png     # 小时黄金档（CST）
+        ├── 04-funnel.png     # 转化漏斗
+        ├── 05-length.png     # 字数 vs 曝光（仅 deep）
         └── 06-top10.png      # Top10 原创（仅 deep）
 ```
 
-Markdown 结构：`总览 → 日趋势 → 话题ROI → 黄金档 → 漏斗 → Top10 → 手册对标 → 下一步`
+Markdown 结构：`总览 → 话题ROI → 转化漏斗 → 小时黄金档 → (Top10 原创) → 手册对标 → 下一步`
 
 ---
 
@@ -102,16 +108,16 @@ Markdown 结构：`总览 → 日趋势 → 话题ROI → 黄金档 → 漏斗 �
 CSV ──► 列名容错(alias) ──► Snowflake还原CST ──► 话题分类(topics.json)
                                 │
                                 ▼
-                    统计(日/话题/小时/漏斗) ──► 绘图(matplotlib) ──► Markdown 组装
+                    动态统计(日/话题/小时/漏斗) ──► 绘图(matplotlib) ──► Markdown 组装
                                 │
                                 ▼
                     按粉丝阶段对标 handbook/8章 → 可执行建议
 ```
 
 - **列名容错**：`Post id / Post text / Impressions` 等大小写/别名自动归一，缺必选列直接报错
-- **时间**：`(id >> 22) + 1288834974657 → UTC → CST`，与 `Date` 列偏差 >1天会 warn
-- **话题**：`--topics` > 按 `niche` 选 `topics.json`(AI) / `topics.generic.json`(通用) > 兜底
-- **手册**：`references/handbook/` 8章原文随仓库更新，报告末尾自动引用章节
+- **时间**：`(id >> 22) + 1288834974657 → UTC → CST`，与 `Date` 列偏差 `>1` 天会告警
+- **话题**：`--topics` > 按 `niche` 选 `topics.json`（AI） / `topics.generic.json`（通用） > 兜底
+- **手册**：`references/handbook/` 8 章原文随仓库分发，报告末尾按当前数据动态引用对应章节
 
 ---
 
@@ -124,23 +130,22 @@ x-analytics/
 ├── scripts/
 │   ├── x-analyze.py         # 主脚本
 │   └── requirements.txt
-├── references/
-│   ├── skeleton.md          # 报告骨架（给 AI/脚本的版式参考）
-│   ├── metrics.md           # 指标说明
-│   ├── csv-aliases.md       # 列名容错表
-│   ├── topics.json          # AI 赛道词表
-│   ├── topics.generic.json  # 通用词表
-│   └── handbook/            # 《X增长手册》8章原文
-└── assets/                  # 示例资源
+└── references/
+    ├── skeleton.md          # 报告骨架（版式与图表编号规范）
+    ├── metrics.md           # 指标说明
+    ├── csv-aliases.md       # 列名容错表
+    ├── topics.json          # AI 赛道词表（含定制示例）
+    ├── topics.generic.json  # 通用词表
+    └── handbook/            # 《X增长手册》8章原文
 ```
 
 ---
 
 ## 💡 小技巧
 
-- 想调话题分类？直接改 `references/topics.json` 后重跑 `--deep`
+- 想调话题分类？直接复制修改 `references/topics.json`（支持 `_note` 注释键），通过 `--topics` 传入即可
 - 多账号？用 `--niche` 区分，报告会自动切换词表与手册话术
-- 报告可直接 `git add` 推到你的 Clog `每周复盘/` 目录
+- 建议复盘后把高曝光写作规律同步到日常发帖，配合 `chasen-x-writing` 使用
 
 ---
 

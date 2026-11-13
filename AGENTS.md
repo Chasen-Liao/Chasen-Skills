@@ -31,7 +31,7 @@
 2. **docs/ 不入库** — 已 `.gitignore`，研究笔记、草稿放 `docs/`，不提交
 3. **单 skill 单原子任务** — 一次只新增或修改一个 skill，不顺手改其他 skill
 4. **薄封装** — 不做投机功能，脚本/词表能解决的不写复杂逻辑
-5. **标准结构** — 新 skill 必须有 `SKILL.md` + `README.md`，命名 `kebab-case`，frontmatter 含 `name/description`
+5. **标准结构** — 新 skill 必须有 `SKILL.md` + `README.md`，命名 `kebab-case`，frontmatter 须符合 `MAINTENANCE.md` 最小集（`name`、`description`、`license`、`compatibility`、`metadata.author/version/category`）
 
 ## SKILL.md vs README.md 分工
 

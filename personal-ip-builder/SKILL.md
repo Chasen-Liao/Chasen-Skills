@@ -2,33 +2,34 @@
 name: personal-ip-builder
 description: 从照片、角色/画风参考图或纯文字需求，打造可长期复用的个人 IP 数字资产卡并打包为专属三模式配图 Skill。用户说 打造个人IP/做个人IP形象/从参考图做角色资产/做角色设定卡/数字资产卡/personal IP / character IP pack 或调用 /personal-ip-builder 时使用
 license: MIT
-compatibility: Compatible with any reference-capable image generator (built-in image_gen / GenerateImage, Codex image, GPT-4o, Nano Banana, Midjourney --cref, Flux Redux, etc.) and local image viewer. Falls back to character contract + executable prompts when no image generator is available.
+compatibility: >-
+  Prioritizes built-in image_gen / GenerateImage with reference-image input;
+  supports user-configured reference-capable generators (Codex image, GPT-4o,
+  Nano Banana, Midjourney --cref, Flux Redux) and requires a local image
+  viewer. Falls back to character contract + executable prompts when no image
+  generator is available.
 metadata:
   author: Chasen-Liao
-  version: "0.3.0"
+  version: "0.3.1"
   category: workflow
 ---
 
 # Personal IP Builder — 打造个人 IP 数字资产卡
 
-> 目标不是一次交齐封面、背景图和场景图，而是先锁定单一视觉真源（`master-立绘参考.png`），派生一套跨工具可复用的数字资产卡，并打包成专属三模式配图 Skill。
+> 先锁定单一视觉真源（`master-立绘参考.png`），派生跨工具可复用的数字资产卡，再打包成专属三模式配图 Skill。
 
 ## 何时使用
 
-- 用户想做原创个人 IP：无论手里有**真人照片**、**喜欢的角色/画风参考图**，还是**只有文字想法 / 想升级旧头像**
-- 需要一套长期一致的角色真源资产，而不是单张一次性头像
-- 用户说「打造个人 IP」「做个人 IP 形象」「做角色设定卡」「做数字资产卡」「personal IP」或调用 `/personal-ip-builder`
+- 用户想做原创个人 IP（手里有**真人照片**、**角色/画风参考图**，或**纯文字想法 / 旧头像升级**），需要一套长期一致的角色真源资产而非单张一次性头像
+- 触发词：`打造个人 IP` / `做个人 IP 形象` / `做角色设定卡` / `做数字资产卡` / `personal IP` / `/personal-ip-builder`
 
-## 核心原则
+## 核心原则与边界
 
-1. **三类输入全支持，绝不复刻受保护原图。**
-   - 照片路径：只提取用户点名的真人特征（发型、眼镜、常戴配饰等），转译为目标画风。
-   - 参考图路径：只借情绪、比例、配色或笔触气质，严禁照抄原角色的脸部细节、服装组合、构图与 Logo。
-   - 无图 / 旧头像升级路径：优先询问是否有照片或参考图；若用户希望从零纯文字设计，直接按文字访谈启动。
-2. **画风随用户锁定，不强绑单一画风。** 只有当用户没有画风偏好时，才推荐「浅底、深灰手绘线稿、清爽平涂」作为默认起手；一旦用户在阶段 2 选定画风（如日系赛璐璐、Q版手绘平涂、扁平矢量、像素风、3D 盲盒/粘土、半写实等），阶段 3～5 全部严格沿用该锁定画风。
-3. **单真源不重复出图。** 阶段 3 锁定的干净单人物参考图直接归档为 `01-数字资产卡/master-立绘参考.png`；阶段 4 以它为唯一参考真源生成设定卡、头像与表情，不再重复生成一张功能重叠的「视觉规范卡」。
-4. **先锁定 master，再出核心资产。** 未经用户明确锁定 `master-立绘参考.png`，不生成设定卡与批量表情；开场不做封面、背景图、场景图与 GIF。
-5. **跨工具与跨 Agent 兼容。** 兼容 `image_gen` / `GenerateImage`、Codex image、GPT-4o、Nano Banana、Midjourney（`--cref`）、Flux Redux 等；适配 Pi、Antigravity、Claude Code、Cursor、Grok Bot。若当前生图工具要求参考图位于特定目录（如 Grok Bot 的 `/workspace` 或 `attachments`），先复制再传参。
+1. **三类输入全支持，严禁复刻受保护原图**：照片只提取用户点名的真人特征并转译为目标画风；参考图只借气质、比例或配色，严禁照抄原角色五官、服装组合、构图与第三方 Logo。
+2. **画风随用户锁定**：无偏好时推荐「浅底、深灰手绘线稿、清爽平涂（3～3.5 头身）」；一旦在阶段 2 选定画风，阶段 3～5 严格沿用，不强行改回默认画风。
+3. **单真源门禁，不重复出图**：未经用户明确锁定 `01-数字资产卡/master-立绘参考.png`，不生成设定卡与批量表情；阶段 4 以 `master` 为唯一 `Image 1` 参考真源，不再生成功能重叠的「视觉规范卡」。
+4. **范围边界**：开场不制作封面、背景图、日常配图、场景图或 GIF（全部留给阶段 5 专属配图 Skill 或外部 GIF skill 按需派生）。
+5. **生图工具与沙箱兼容**：优先直接调用环境内置 `image_gen`（或 `GenerateImage`），不静默切换未授权外部 CLI/API；若工具要求参考图位于特定目录（如 Grok Bot 的 `/workspace` 或 `attachments`），先复制再传参；无可用生图能力时不假装已出图，只交付 `character-contract.md`、Prompt 骨架与阶段 5 Skill 模板。
 
 ## 阶段总览
 
@@ -38,55 +39,27 @@ metadata:
 
 ## 阶段 0：检查工作区与能力
 
-1. 确认归档根路径：优先使用用户指定目录，否则默认 `03-Assets/YYYY-MM-DD-<主题>-personal-ip/`。
-2. 检查当前环境图像能力：
-   - 是否有支持**参考图输入**的图像生成工具（内置 `image_gen` / `GenerateImage`、Codex image 或外部工作流）。
-   - 若无生图能力：如实说明缺少生图依赖，继续完成访谈并交付完整 `character-contract.md`、可直接粘贴的 Prompt 骨架与 Stage 5 Skill 模板，不假装已出图。
+1. 确认归档根路径：优先用户指定目录，否则默认 `03-Assets/YYYY-MM-DD-<主题>-personal-ip/`。
+2. 检查当前环境是否具备支持**参考图输入**的生图工具及本地看图工具，按「核心原则 5」执行或降级。
 
-## 阶段 1：读取输入并确定路径
+## 阶段 1–2：读取输入与访谈定稿
 
-先礼貌询问用户是否有**个人照片**、**喜欢的角色/画风参考图**或**想升级的旧头像**；若用户明确没有图或想纯文字从零设定，直接进入纯文字路径。
+按 [design-interview.md](references/design-interview.md) 完成需求对齐，遵循以下规则：
 
-按输入类型提炼（详见 [design-interview.md](references/design-interview.md)）：
-
-- **照片转 IP**：列出用户希望保留的真人辨识点（发型、眼镜、耳饰、肤色倾向、神态），其余按目标画风简化提纯。
-- **参考图借气质转原创 IP**：拆解「可借视觉语言（情绪、头身比、配色关系、笔触氛围）」与「必须原创替换项（五官细节、服装结构、职业道具、品牌符号）」。
-- **无图从零设定 / 旧头像升级**：提炼核心人设关键词、视觉记忆点与需要保留/淘汰的旧特征。
-
-## 阶段 2：每轮 3～5 问（给推荐选项）
-
-每轮打包 3～5 个问题并附推荐答案，已确认项跨轮保留，信息够了就停，不要走 11 轮一次一问，也不要把用途展开成封面/场景制作清单。
-
-第一轮优先对齐 5 件事（细节选项与赛道预设见 [design-interview.md](references/design-interview.md)）：
-
-1. **输入与原创边界**：用哪条输入路径？哪些特征保留，哪些必须原创化？
-2. **画风与头身比**：从速选表选定（无偏好时默认推荐「Q 版手绘平涂 / 3～3.5 头身 / 浅底」；也可自选赛璐璐、扁平矢量、像素、3D 盲盒/粘土、半写实等）。
-3. **第一眼记忆点**：发型发色、固定服装、1 个识别配件、主色/辅色/点缀色、品牌符号（如有）。
-4. **身份与性格**：本人分身还是虚构角色？一句话内容定位与 2～3 个能驱动动作的性格词。
-5. **首批 4～6 个静态表情**：直接匹配创作者内容里最常出现的情绪（可从赛道推荐包勾选）。
+1. 先询问用户走**照片转 IP**、**参考图借气质**还是**无图从零设定 / 旧头像升级**，按对应路径提炼「保留特征」与「必须原创替换项」。
+2. 每轮打包 **3～5 个带推荐选项的问题**，已确认项跨轮锁定不重复问；先对齐「第一轮优先对齐 5 件事」，信息够生成 `master` 即停（缺口时按「补漏追问清单」追问 1 轮），不把用途展开成封面/场景制作清单。
 
 ## 阶段 3：试定稿并锁定 `master`（最多 3 张）
 
-在生成设定卡和表情前，先试出最多 3 张单人物候选图，让用户看清「这个角色长什么样」。
+在生成设定卡和表情前，先试出最多 3 张干净单人物全身（推荐）或稳定半身候选图：
 
-### 候选图硬约束
-
-- 干净单人物全身或稳定半身（推荐全身，便于后续三视图推导），正面或微侧自然站姿。
-- **纯白或纯浅单色/透明背景**，画面内禁止出现三视图拼版、色卡条、文字标签、装饰边框或场景道具堆砌。
-- 画风、渲染质感、头身比严格按阶段 2 确认执行。
-
-### 迭代与锁定规则
-
-- 每次重绘**只改一个主要问题**（如调整发型、更换配色或修正头身比）。
-- 参考图输入始终回到**用户原始照片/参考图 + 已确认契约**，禁止拿上一张失败的候选图继续套娃。
-- 3 张仍未过关时，交付当前最佳版本并说明待调整的单一差距，等待用户方向。
-- **用户明确拍板（「就这版 / 定稿 / 锁定」）后**，将最终选定图直接归档为：
-  `01-数字资产卡/master-立绘参考.png`
-  并将其路径写入 `character-contract.md`。
+- **硬约束**：正面或微侧自然站姿，纯白/纯浅单色或透明底，画面内**禁止**三视图拼版、色卡条、文字标签、装饰边框或场景道具堆砌；画风与头身比严格按阶段 2 执行。
+- **迭代规则**：每次重绘只改一个主要问题；参考图输入始终回到**原始照片/参考图 + 已确认契约**，禁止拿上一张失败候选图套娃。3 张未过关时交付当前最佳版本并说明单一差距。
+- **拍板锁定**：用户明确确认后，保存为 `01-数字资产卡/master-立绘参考.png`，并写入 `character-contract.md`。
 
 ### 阶段 3 Prompt 骨架（`master-立绘参考.png`）
 
-按所选生图工具适配输入方式（多模态 `Input images` / Midjourney `--cref` / Flux Redux），直接套用以下骨架并替换 `{{...}}`：
+按所选生图工具适配输入方式，直接套用以下骨架并替换 `{{...}}`：
 
 ```text
 [Use Case] Character design master reference sheet (single character only).
@@ -104,19 +77,12 @@ metadata:
 
 ## 阶段 4：以 `master` 为真源出核心资产
 
-只交付以下核心资产，禁止自行加出封面、背景图、场景图或 GIF。
+阶段 4 所有生图必须将 `01-数字资产卡/master-立绘参考.png` 作为 `Image 1` 传入（**严禁拿派生图接力生图**），仅交付以下 4 类产物：
 
 1. `01-数字资产卡/角色设定卡.png`（1 张）
 2. `character-contract.md`（1 份，模板见 [character-contract.md](references/character-contract.md)）
 3. `02-头像与表情/头像-透明.png`（1 张）
 4. `02-头像与表情/表情-01～06-透明.png`（4～6 张）
-
-### 一致性铁律
-
-- **唯一真源**：阶段 4 所有生成图都必须把 `01-数字资产卡/master-立绘参考.png` 作为 `Image 1` 传入；**禁止用上一张派生图接力生图**。
-- **画风继承**：线条、上色、光影与材质必须严格跟随 `master-立绘参考.png`，不强行改成未选定的其他画风。
-- **结构硬约束**：侧面必须是真 90° 正侧面（不能画成 3/4 侧脸）；背面后脑勺不得长出正面五官；头像在圆形裁切下脸与识别配件清晰；表情遮住文件名/文字后仍可一眼分辨情绪。
-- **默认无字**：除设定卡色条上的 HEX 色值外，默认不生成多余文字、装饰排版、第三方 Logo 或水印。
 
 ### 阶段 4 Prompt 骨架 1：`角色设定卡.png`（三视图 + HEX 色条 + 配件标注）
 
@@ -155,28 +121,21 @@ metadata:
 
 > 若当前生图工具无法直接输出真透明通道 PNG，生成纯白/绿幕单色背景后，用本地脚本或抠图工具去背并验证边缘干净，再存为透明 PNG。
 
-### 归档目录
+### 归档目录与阶段 4 交付验收清单
 
-保存到用户指定路径，默认：
+保存至指定路径（默认 `03-Assets/YYYY-MM-DD-<主题>-personal-ip/`，修订用 `-v2`、`-v3` 递增不覆盖旧版），交付前逐项核对（未通过项必须以 `master-立绘参考.png` 为参考单点重做）：
 
-```text
-03-Assets/YYYY-MM-DD-<主题>-personal-ip/
-├── character-contract.md
-├── 01-数字资产卡/
-│   ├── master-立绘参考.png
-│   └── 角色设定卡.png
-└── 02-头像与表情/
-    ├── 头像-透明.png
-    └── 表情-01～06-透明.png
-```
-
-修订不覆盖旧版，用 `-v2`、`-v3` 递增。交付前按 [asset-checklist.md](references/asset-checklist.md) 逐项验收。
+- [ ] **真源干净无重复**：`01-数字资产卡/master-立绘参考.png` 为纯白/浅单色或透明底单人物、无边框/色卡/文字干扰，路径已写入 `character-contract.md`，未重复生成「视觉规范卡」。
+- [ ] **画风与特征零漂移**：设定卡、头像、表情的线条、上色、材质、头身比、发型、服装、识别配件与品牌符号严格跟随 `master`，无受保护抄袭、额外角色、第三方 Logo 或水印。
+- [ ] **设定卡结构与 HEX**：`01-数字资产卡/角色设定卡.png` 侧面为真 90° 正侧面（非 3/4）、背面无五官，色条 HEX 清晰且与 `character-contract.md` 一致。
+- [ ] **头像圆框安全**：`02-头像与表情/头像-透明.png` 为真透明 PNG，放入圆形裁切后面部与核心识别配件完整不被切边（留有约 15% 安全边距）。
+- [ ] **表情无字可辨**：4～6 张 `02-头像与表情/表情-01～06-透明.png` 均为独立透明 PNG，遮住文件名或无文字时情绪与动作依然清晰可辨、彼此区分度高。
 
 ---
 
 ## 阶段 5：生成专属三模式配图 Skill
 
-核心资产验收通过后，默认在用户项目或指定目录生成可独立分发、即装即用的专属配图 Skill 文件夹：
+核心资产验收通过后，在用户项目或指定目录生成可独立分发、即装即用的专属配图 Skill：
 
 ```text
 <name>-ip-illustrations/
@@ -189,38 +148,19 @@ metadata:
     └── 表情-01～06-透明.png
 ```
 
-生成规则：
+生成与验收规则：
 
-1. **直接基于模板生成**：读取 [illustration-skill-template.md](references/illustration-skill-template.md)，将占位符替换为本次锁定的角色名、画风规则、HEX 色表、`Character Lock` 段落与本地素材相对路径。
-2. **三模式开箱内置**：生成的 `SKILL.md` 必须完整保留「解释型配图（默认）/ 信息图模式 / 封面模式」三条路由、动态画幅策略与合一交稿前自查清单。
-3. **资产自包含**：所有参考图拷入 `<name>-ip-illustrations/assets/`，使用相对路径引用，不依赖外部目录。
-4. **不写死固定画幅**：不在配图 Skill 中锁死具体比例或像素，由用户在每次出图时指定。
-5. **版本同步提示**：告知用户日后角色资产改版时，需同步替换 `assets/` 与 `character-contract.md` 并在 `SKILL.md` 递增版本号；该文件夹可直接放入个人 GitHub Skill 仓库供任意 Bot / Agent 安装。
+1. **基于母模板生成**：读取 [illustration-skill-template.md](references/illustration-skill-template.md)（仓库三模式配图规则唯一母模板），替换占位符为本次 `character-contract.md` 锁定的角色名、画风规则、HEX 色表、`Character Lock` 段落与 `assets/` 相对路径。
+2. **完整保留契约**：生成的 `SKILL.md` 必须完整保留「解释型配图（默认）/ 信息图模式 / 封面模式」三条路由、动态画幅策略（不写死比例或像素）与合一交稿前自查清单；`assets/` 已拷入全部参考图且使用相对路径引用。
+3. **版本同步提示**：告知用户日后角色资产改版时，需同步替换 `assets/` 与 `character-contract.md` 并在 `SKILL.md` 递增版本号。
 
-## 动态表情（可选扩展）
+## 动态表情与最终交付物
 
-本 skill 不直接制作 GIF 或动态表情。若用户需要会动的表情，引导其将已锁定的 `master-立绘参考.png`、`角色设定卡.png` 与静态透明表情包交给外部 GIF / 动效 skill 处理。
-
-## 最终交付物清单
-
-1. `character-contract.md`（含锁定路径、画风 HEX 规范与 `Character Lock`）
-2. `01-数字资产卡/master-立绘参考.png` 与 `01-数字资产卡/角色设定卡.png`
-3. `02-头像与表情/头像-透明.png` 与 4～6 张 `表情-01～06-透明.png`
-4. `<name>-ip-illustrations/` 专属三模式配图 Skill 文件夹（内置 `assets/` 与 `character-contract.md`）
-5. 简短验收说明：补全了原图未展示的哪些部位、哪些细节仍需用户审美终审（无生图工具时如实说明仅交付契约与可执行 Prompt）
-
-## 边界与禁止
-
-- 未锁定 `master-立绘参考.png` 之前，不出设定卡、头像与表情包
-- 不在阶段 4 重复生成功能重叠的「视觉规范卡」
-- 不把参考图或真人照片当成一比一复刻模板
-- 不强迫偏好其他画风的用户套用「浅底手绘线稿」
-- 开场不制作封面、背景图、日常配图、场景图或 GIF（全部留给阶段 5 专属配图 Skill 按需派生）
-- 无生图能力时不假装已出图
+- **动态表情（可选扩展）**：若用户需要 GIF 或动态表情，引导其将已锁定的 `master-立绘参考.png`、`角色设定卡.png` 与静态透明表情包交给外部 GIF / 动效 skill 处理。
+- **最终交付物**：① `character-contract.md`；② `01-数字资产卡/`（`master-立绘参考.png`、`角色设定卡.png`）；③ `02-头像与表情/`（`头像-透明.png` + 4～6 张表情）；④ `<name>-ip-illustrations/` 专属配图 Skill；⑤ 简短验收说明（补全了哪些部位、哪些细节需用户审美终审；无生图工具时如实说明仅交付契约与可执行 Prompt）。
 
 ## References
 
-- [references/design-interview.md](references/design-interview.md) — 三类输入路径预设、画风与头身比速选表、赛道表情推荐包
-- [references/character-contract.md](references/character-contract.md) — 通用角色设计契约与 Character Lock 模板
-- [references/asset-checklist.md](references/asset-checklist.md) — 核心资产与衍生 Skill 验收清单
-- [references/illustration-skill-template.md](references/illustration-skill-template.md) — 阶段 5 专属三模式配图 Skill 模板
+- [references/design-interview.md](references/design-interview.md) — 第一轮 5 问、三类输入路径预设、画风与头身比速选表、赛道表情推荐包、补漏清单
+- [references/character-contract.md](references/character-contract.md) — 通用角色设计契约与 `Character Lock` 模板
+- [references/illustration-skill-template.md](references/illustration-skill-template.md) — 阶段 5 专属三模式配图 Skill 仓库唯一母模板

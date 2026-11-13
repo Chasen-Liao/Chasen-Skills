@@ -1,18 +1,24 @@
 ---
 name: parallel-agent
-description: Use when 2 or more genuinely independent tasks can proceed concurrently without shared mutable state.
+description: >-
+  For Pi with pi-subagents: thin local policy layer deciding when and how to split 2 or more genuinely independent tasks concurrently without shared mutable state.
+  中文触发：并行拆任务 / 多子代理并行（仅限 Pi）。
+license: MIT
+compatibility: 需 Pi 环境并已安装 pi-subagents Skill（提供 subagent / workflowScript / runs.all / runs.run）
+metadata:
+  author: Chasen-Liao
+  version: "0.2.0"
+  category: workflow
 ---
 
 # Parallel Agent
 
-This is a thin local policy layer for Pi. It decides **whether and how to split work**; the installed `pi-subagents` skill is the source of truth for APIs, roles, execution controls, and detailed recipes.
+Thin local policy layer for Pi deciding **whether and how to split work**. The installed `pi-subagents` skill is the single source of truth for APIs, roles, execution controls, and recipes—do not duplicate or restate its details here.
 
 ## Before dispatching
 
-1. Read the installed `pi-subagents` skill completely.
-2. Follow its router to the relevant reference: prompting/roles, execution controls, multi-lane orchestration, or constraints/recipes.
-3. Run `subagent({ action: "list" })` and use only executable, non-disabled, session-allowed agents; capability ceilings or allowlists can still reject a launch.
-4. Do not invent or restate runtime behavior when the installed documentation already defines it.
+1. Read the installed `pi-subagents` skill completely and follow its router to the relevant reference (prompting/roles, execution controls, multi-lane orchestration, or constraints/recipes).
+2. Run `subagent({ action: "list" })` and use only executable, non-disabled, session-allowed agents; capability ceilings or allowlists can still reject a launch.
 
 ## Decide whether to parallelize
 
@@ -33,9 +39,7 @@ Do not parallelize a coupled investigation, dependent sequence, overlapping sour
 
 ## Minimal lane guidance
 
-Use the narrowest role described by the installed `pi-subagents` documentation: local reconnaissance, external research, advisory decision review, read-only review, or approved implementation. Do not duplicate that role catalog here; read the official reference when choosing.
-
-Use three standard shapes:
+Assign each lane the narrowest role defined in `pi-subagents` using three standard shapes:
 
 1. **Read-only fanout** — independent scouts/reviewers answer distinct questions; parent synthesizes.
 2. **Research fanout** — local repository context and external primary-source research proceed independently; parent decides after comparing evidence.
@@ -46,5 +50,3 @@ Use three standard shapes:
 Ask every child for a concise handoff containing: `status`, `findings`, `changedFiles`, `validation`, and `remainingRisks`. Use the installed `pi-subagents` artifact/output mechanisms for large reports instead of copying them into every prompt.
 
 A partial failure remains a result: preserve successful independent lanes, report failed lanes, and continue only where safe. Do not silently discard failures or retry indefinitely.
-
-This skill is locally maintained for Chasen's Pi setup. Keep it focused on local policy; consult the installed `pi-subagents` documentation rather than copying its API details here.

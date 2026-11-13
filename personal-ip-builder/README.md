@@ -8,7 +8,7 @@
 ![Output](https://img.shields.io/badge/Output-数字资产卡_+_配图_skill-f59e0b?style=flat-square)
 ![Style](https://img.shields.io/badge/Style-多画风通用-0ea5e9?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.3.0-64748b?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.3.1-64748b?style=flat-square)
 
 </p>
 
@@ -107,16 +107,16 @@ personal-ip-builder/
 ├── SKILL.md
 ├── README.md
 └── references/
-    ├── design-interview.md            # 三类输入预设、画风头身比速选表、赛道表情包
+    ├── design-interview.md            # 第一轮 5 问、三类输入预设、画风速选表、赛道表情包
     ├── character-contract.md          # 通用角色契约与 Character Lock 模板
-    ├── asset-checklist.md             # 核心资产与衍生 Skill 验收清单
-    └── illustration-skill-template.md # Stage 5 三模式专属配图 Skill 模板
+    └── illustration-skill-template.md # 阶段 5 三模式配图 Skill 仓库唯一母模板
 ```
 
 ---
 
 ## Changelog
 
+- **0.3.1**：将 `asset-checklist.md` 独有验收项并入 `SKILL.md` 阶段 4 验收清单并删除冗余文件；合并 `SKILL.md` 重复禁令，将阶段 1–2 细则下沉 `design-interview.md`；标注 `illustration-skill-template.md` 为三模式配图 Skill 唯一母模板并对齐内置生图工具兼容表述。
 - **0.3.0**：通用化升级（支持照片 / 参考图 / 无图纯文字三路径、多画风自由锁定、多生图工具与多 Agent 适配）；消除 `master` 与旧「视觉规范卡」重复产物，统一为 `master-立绘参考.png` + `角色设定卡.png`；补充 Stage 3/4 可执行 Prompt 骨架；重写 `design-interview.md` 预设包，并新增 `illustration-skill-template.md` 固化 Stage 5 三模式配图模板。
 - **0.2.0**：聚焦数字资产卡真源；每轮 3～5 问、最多 3 张定稿；核心产出缩为设定卡/规范卡/契约/透明头像与静态表情；默认生成 assets 内置的专属配图 skill；开场不做封面/场景/GIF。
 - **0.1.0**：从动漫参考图做整套数字资产（含场景/贴纸/主视觉），可选 repo-only 教程配图 skill。

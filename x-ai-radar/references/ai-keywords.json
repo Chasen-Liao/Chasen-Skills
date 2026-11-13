@@ -1,17 +1,18 @@
 {
-  "version": 1,
-  "description": "AI relevance pre-filter for x-ai-radar. Hit => maybe, then LLM judges high/medium/low. Keep high/medium.",
+  "version": 2,
+  "description": "AI relevance pre-filter for x-ai-radar (case-insensitive). Hit => maybe, then LLM judges high/medium/low. Keep high/medium.",
   "keywords": [
     "AI", "AGI", "LLM", "SLM", "VLM", "diffusion",
-    "GPT", "ChatGPT", "OpenAI", "Anthropic", "Claude", "Gemini", "Grok", "xAI", "DeepSeek", "Mistral", "Llama", "Gemma", "Qwen", "Kimi", "Yi",
-    "agent", "Agent", "MCP", "function calling", "tool use", "RAG", "vector db", "embedding",
-    "reasoning", "RLHF", "RLVR", "SFT", "MoE", "quantization", "distillation", "fine-tune", "fine tuning",
-    "cursor", "vibe coding", "codegen", "copilot", "codex",
+    "GPT", "ChatGPT", "OpenAI", "o3", "o4", "Anthropic", "Claude", "Sonnet", "Opus",
+    "Gemini", "Grok", "xAI", "DeepSeek", "Mistral", "Llama", "Gemma", "Qwen", "Kimi",
+    "agent", "MCP", "subagent", "harness", "function calling", "tool use", "RAG", "embedding",
+    "reasoning", "RLHF", "RLVR", "post-training", "SFT", "MoE", "quantization", "distillation", "fine-tune",
+    "cursor", "vibe coding", "copilot", "codex", "opencode", "antigravity", "pi",
     "inference", "training", "token", "context window", "KV cache", "attention",
     "multimodal", "TTS", "STT", "image generation", "video generation", "Sora", "Veo",
     "benchmark", "eval", "SWE-bench", "MMLU", "GPQA"
   ],
   "cn_keywords": [
-    "大模型", "模型", "智能体", "推理", "微调", "蒸馏", "量化", "长上下文", "多模态"
+    "大模型", "模型", "智能体", "推理", "微调", "蒸馏", "量化", "长上下文", "多模态", "工作流"
   ]
 }

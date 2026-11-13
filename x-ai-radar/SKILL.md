@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires browser subagent + logged-in X session (Antigravity on-demand, read-only)
 metadata:
   author: Chasen-Liao
-  version: "0.1.0"
+  version: "0.2.0"
   category: research
 ---
 
@@ -25,7 +25,7 @@ metadata:
 2. **进入 AI 时间线**：让子代理打开 `x.com/home`（用户日常的 AI 调教流；若用户有 AI List，优先进 List），等待首屏加载完成。
 3. **滚动抓候选**：向下滚动时间线，抓 **15-20 条候选**，每条记录：
    - `url / 作者 DisplayName + @handle / 是否认证/大V / 粉丝数`
-   - `发布时间 / 距今小时数 h`
+   - `发布时间 / 距今小时数 h`（若页面时间显示模糊或折叠，可从 `url` 的 `/status/<id>` 提取 Snowflake ID，用 `((id >> 22) + 1288834974657)` 还原精确 CST 发布时间再算 `h`）
    - `Views / Likes / Reposts / Replies / Bookmarks`
    - `是否有媒体/链接/引用`
 4. **10 小时硬窗口**：`now - 发布时间 > 10h` 的一律丢弃，不纳入候选（宁缺毋滥）。
@@ -46,15 +46,16 @@ metadata:
    - 非大V但 `viewsPerHour` 爆高也保留（病毒式传播），不唯粉丝论
    - 刷量号/广告号（`engagementRate < 0.001 且 Replies < 5`）降权剔除
 3. **AI 相关性**（关键词初筛 + LLM 复判）：
-   - 读 `references/ai-keywords.json` 做初筛（命中即 `maybe`）
-   - 再让 LLM 判 `AI-relevance: high/medium/low`，只保留 `high/medium`（`vibe coding / cursor / agent / gemma / deepseek` 等隐式 AI 靠 LLM 捞回）
-4. **热度分**（用于排序，量级 0-100）：
+   - 读 `references/ai-keywords.json` 做大小写不敏感初筛（命中即 `maybe`）
+   - 再让 LLM 判 `AI-relevance: high/medium/low`，只保留 `high/medium`（隐式 AI 工具/模型/工作流词靠 LLM 捞回）
+4. **热度分**（封顶 `0-100`，用于排序与定档）：
+   ```text
+   rawScore = (log10(Views+1)*10 + Likes*0.4 + Reposts*0.8 + Replies*1.0 + viewsPerHour*0.02) / 10
+   heatScore = min(100, round(rawScore + bonus))
+   # bonus: 大V +5，h ≤ 2 的 rising +8，含原贴链接/论文 +3
    ```
-   heatScore = (log10(Views+1)*10 + Likes*0.4 + Reposts*0.8 + Replies*1.0 + viewsPerHour*0.02) / 10
-   # 示例：80k Views / 600 Likes / 120 Reposts / 90 Replies / 20k views/h → 49+240+96+90+400=875 → /10 ≈ 88 分
-   ```
-   - 大V +5 分，`h ≤ 2` 的 rising +8 分，含原贴链接/论文 +3 分（均在 /10 后叠加）
-   - 按 `heatScore` 降序取 **Top 8-10**
+   - 分档参考：`90-100` 现象级爆帖 / `70-89` 高热焦点 / `50-69` 值得关注；若多条触顶 100，按 `viewsPerHour` 降序决胜
+   - 取 **Top 8-10**
 5. **去重**：按 `tweet id/url` 去重，同一作者 10h 内多条爆帖只保留最高分那条
 
 ### 阶段三：汇总输出（仅会话内）
@@ -86,10 +87,10 @@ metadata:
 
 - **10 小时硬约束**：超过 10h 的帖不入榜，即使热度高
 - **只读**：严禁 `type_text / 点赞 / 转推 / 关注`，本 skill 不产生任何写入
-- **不写作**：不生成 Quote/Reply 草稿；如需写作请另行调用写作类 skill（如 `x-browser-automation`，若已安装）
+- **不写作**：不直接生成 Quote/Reply 草稿；发现值得写的选题后，如需按个人口吻出稿请另行调用 `chasen-x-writing`
 - **未登录**：若子代理发现未登录，立即报错并给 `https://x.com/login`，不伪造数据
 - **候选不足**：不足 8 条就如实输出 N 条 + 标注原因，不凑数
 
 ## References
 
-- `references/ai-keywords.json` — AI 关键词表（约 60 词，LLM 复判前初筛）
+- `references/ai-keywords.json` — AI 关键词初筛表（LLM 复判前初筛）

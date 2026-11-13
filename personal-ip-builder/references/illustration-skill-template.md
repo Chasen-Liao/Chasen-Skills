@@ -1,5 +1,6 @@
 # 阶段 5 专属配图 Skill 模板（`illustration-skill-template.md`）
 
+> **三模式配图 Skill 仓库唯一母模板**：本仓库内所有三模式配图规则（包括阶段 5 生成的 `<name>-ip-illustrations` 及 `chasen-ip-tutorial-illustrations`）均以本模板为单真源同步。
 > 使用方式：在阶段 5 为用户生成 `<name>-ip-illustrations/SKILL.md` 时，把下方虚线框内的完整模板复制过去，将所有 `{{...}}` 占位符替换为本次 `character-contract.md` 锁定的真实内容，并删掉模板说明。所有参考图路径均指向同目录下的 `assets/`。
 
 ---
@@ -14,7 +15,11 @@ description: >-
   fixed in this skill. Use for tutorial, workflow, concept, comparison, or
   cover banners featuring {{IP_NAME}}.
 license: MIT
-compatibility: Compatible with reference-capable image generators (built-in image_gen / GenerateImage, Codex image, GPT-4o, Nano Banana, Midjourney --cref, Flux Redux, etc.) and local image viewer.
+compatibility: >-
+  Prioritizes built-in image_gen / GenerateImage with reference-image input;
+  supports user-configured reference-capable generators (Codex image, GPT-4o,
+  Nano Banana, Midjourney --cref, Flux Redux) and requires a local image
+  viewer.
 metadata:
   author: {{AUTHOR_NAME}}
   version: "0.1.0"
@@ -40,7 +45,7 @@ metadata:
 - **头像与情绪动作参考（按需）**：`assets/头像-透明.png`、`assets/表情-01～06-透明.png`（不把透明表情图直接原封贴成整张配图构图）
 
 **多工具与沙箱环境适配**：
-- 支持内置 `image_gen` / `GenerateImage`、Codex image、GPT-4o、Nano Banana、Midjourney（`--cref`）、Flux Redux 等带参考图能力的工具。若当前环境没有图像生成能力，如实说明缺口，只输出完整 Prompt 而不假装已生成。
+- 优先直接调用当前环境内置 `image_gen`（或 `GenerateImage`），不静默切换到未授权外部 CLI/API；若用户明确配置了 Codex image、GPT-4o、Nano Banana、Midjourney（`--cref`）或 Flux Redux 等带参考图能力的工具，可按其接口适配传参。若当前环境没有可用生图能力，如实说明缺口，只输出完整 Prompt 而不假装已生成。
 - 若运行在路径受限环境（如 Grok Bot），调用 `GenerateImage` 前先将 `assets/` 下需要传入的参考图复制到 `/workspace/...` 或当前 agent 允许的 `attachments` / `assets` 目录再传路径。
 
 ## {{IP_NAME}} Character Lock（每次生图必带）
