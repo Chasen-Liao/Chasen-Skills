@@ -1,6 +1,6 @@
 # MAINTENANCE.md — 维护规则
 
-> 本仓库只放 Chasen 自用 skills，维护目标：**少而精、README 好看、SKILL 可跑**。
+> 本仓库存放通用公开 Agent Skills，维护目标：**少而精、脱敏通用、README 好看、SKILL 可跑**。个人人设、私有语料、内部 ID 与环境默认值在独立私有配置中管理，不提交至本仓库。
 
 ## 一、Skill 标准
 
@@ -30,28 +30,29 @@ metadata:
 ## 二、新增 Skill Checklist
 
 - [ ] 1. 定名 `kebab-case`，确认不与现有 skill 重名
-- [ ] 2. 写 `SKILL.md`：触发语、步骤、边界、References
+- [ ] 2. 写 `SKILL.md`：触发语、步骤、边界、References（环境/模型/账号配置统一使用占位符）
 - [ ] 3. 写 `README.md`：首屏价值 + badges + 特性表 + 安装 + 用法 + 输出示例 + 目录
-- [ ] 4. 本地验证：`npx skills add . --skill <name> --global --yes` 并真实触发一次
-- [ ] 5. 根 `README.md` 导航表加一行
-- [ ] 6. `metadata.version` 设 `0.1.0`
-- [ ] 7. `git status` 确认仅新增本 skill 目录 + 根 README
+- [ ] 4. 运行 `python3 scripts/check-public-privacy.py` 确认无 UUID / 个人联系信息 / 私有路径 / 密钥
+- [ ] 5. 按需本地验证：`npx skills add . --skill <name> --global --yes`
+- [ ] 6. 根 `README.md` 导航表加一行
+- [ ] 7. `metadata.version` 设 `0.1.0`
+- [ ] 8. `git status` 确认仅新增本 skill 目录 + 根 README
 
 ## 三、更新 Skill Checklist
 
-- [ ] 只改一个 skill，不碰其他
+- [ ] 默认只改一个 skill，不碰其他（全仓规范/隐私治理除外）
 - [ ] `SKILL.md` 改逻辑 → `metadata.version` 升 patch/minor
-- [ ] `README.md` 同步更新（特性/用法/截图）
+- [ ] `README.md` 同步更新（特性/用法/版本徽章）
 - [ ] 根 `README.md` 若有一句话介绍，同步改
-- [ ] 本地重装验证：`npx skills add . --skill <name> --global --yes`
+- [ ] 运行 `python3 scripts/check-public-privacy.py` 确认公开脱敏通过
 
 ## 四、README 纪律
 
 | 文件 | 职责 | 禁止 |
 | :--- | :--- | :--- |
-| 根 `README.md` | 导航：是什么 + Skills 表 + 快速开始 + 目录结构 | 不展开 skill 细节 |
+| 根 `README.md` | 导航：是什么 + 公开/私有边界 + Skills 表 + 快速开始 + 目录结构 | 不展开 skill 细节，不泄露私有仓库名或内部配置 |
 | `<skill>/README.md` | 介绍：做什么 + 特性 + 安装 + 用法 + 输出 + 原理 | 不复制 SKILL.md 全文 |
-| `<skill>/SKILL.md` | 契约：给 Agent 的可执行步骤 | 不追求好看，追求可跑 |
+| `<skill>/SKILL.md` | 契约：给 Agent 的可执行步骤 | 不追求好看，追求可跑、精炼、无私密硬编码 |
 
 - 统一用中文，保留必要英文术语/命令
 - 表格优先，少用长段落
@@ -61,7 +62,8 @@ metadata:
 
 - 版本：`0.1.0 → 0.1.1(patch) → 0.2.0(minor) → 1.0.0(稳定)`
 - 提交信息：`feat(<skill>): ...` / `docs(<skill>): ...` / `chore: ...`
-- 提交前：`git diff` 自检，`git status` 确认无 `docs/`、`.agents/`、`skills-lock.json`
+- 提交前：运行 `python3 scripts/check-public-privacy.py`，`git diff` 自检，`git status` 确认无 `docs/`、`.agents/`、`skills-lock.json`
+- 公开仓库提交建议使用 GitHub noreply 邮箱，避免在 commit 元数据中暴露个人邮箱
 
 ## 六、忽略规则
 
@@ -84,4 +86,4 @@ __pycache__/ .venv/
 
 ---
 
-> 维护本质：每次只动一个 skill，让 README 好看到愿意分享，让 SKILL 稳到敢一键安装。
+> 维护本质：保持通用脱敏、减少冗余，让 README 好看到愿意分享，让 SKILL 稳到敢一键安装。
