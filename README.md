@@ -36,7 +36,7 @@
 | **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成**自然人味的 𝕏 帖 / 长文**：先对齐观点、说人话去 AI 味，个人语料支持私有覆写 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 通用三模式角色 IP 配图（**教程 / 信息图 / 封面**），接入用户自备参考图与 `Character Lock`，画幅出图时指定 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
 | **🚦 [cli-dispatch](./cli-dispatch/README.md)** | **共用主机 `pi-task` 同回合派活与验收**：平台要求优先、`--owner` 隔离、同轮阻塞等待验收 `ack`，webhook 仅兜底 | 同回合派活给 Pi 的 Bot | [→ README](./cli-dispatch/README.md) |
-| **📝 [chasen-skill-capture](./chasen-skill-capture/README.md)** | **可复用多步流程沉淀与仓库同步规矩**：当场写通用 Skill、按仓规开 PR 同步（不把 `push` 交 Pi、未成不谎报） | 沉淀团队复用流程时 | [→ README](./chasen-skill-capture/README.md) |
+| **📝 [chasen-skill-capture](./chasen-skill-capture/README.md)** | **可复用多步流程沉淀与公私分流同步规矩**：优先迭代既有 Skill、通用入公开仓 PR / 个人配置验私后入私有仓、不把 `push` 交 Pi、精确区分同步与运行态 | 沉淀复用流程时 | [→ README](./chasen-skill-capture/README.md) |
 | **🔧 [grokbot-pi-setup](./grokbot-pi-setup/README.md)** | 教 Grok Bot **装 Pi + 接任意模型 + 配跑完自动唤醒**，端到端验收 | 第一次让 Bot 派活给 Pi | [→ README](./grokbot-pi-setup/README.md) |
 | **🚚 [grokbot-pi-dispatch](./grokbot-pi-dispatch/README.md)** | **基于 `pi-task` 的异步队列派活与 webhook 唤醒**：任务书五件事 → `--owner` 后台跑 → webhook 叫醒 → 验收 `ack` | 异步 webhook 唤醒场景 | [→ README](./grokbot-pi-dispatch/README.md) |
 
