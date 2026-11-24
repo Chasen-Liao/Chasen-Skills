@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Python 3.10+ with matplotlib and numpy (pip install -r scripts/requirements.txt)
 metadata:
   author: Chasen-Liao
-  version: "0.4.0"
+  version: "0.4.1"
   category: data-analysis
 ---
 
@@ -28,7 +28,7 @@ metadata:
 3. **看报告**：检查 `<out>/YYYY-MM-DD_YYYY-MM-DD-*/` 下的 Markdown 与 `assets/01~06*.png` 是否生成，总结总览、话题 ROI、黄金时段、漏斗与手册对标建议
 
 ```bash
-python scripts/x-analyze.py "./account_analytics_content_2026-08-21_2026-08-27.csv" --out ./x-reports --followers 2800 --niche AI --yes
+python scripts/x-analyze.py "./account_analytics_content_YYYY-MM-DD_YYYY-MM-DD.csv" --out ./x-reports --followers 1500 --niche AI --yes
 python scripts/x-analyze.py "./xxx.csv" --out ./x-reports --yes
 ```
 
