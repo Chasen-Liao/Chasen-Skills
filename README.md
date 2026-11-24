@@ -4,7 +4,7 @@
 
 <p>
 
-![Skills](https://img.shields.io/badge/Skills-9-7c3aed?style=flat-square)
+![Skills](https://img.shields.io/badge/Skills-10-7c3aed?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-10b981?style=flat-square)
 ![npx skills](https://img.shields.io/badge/npx-skills-black?style=flat-square&logo=npm)
 ![Maintained](https://img.shields.io/badge/Maintained-by_Chasen-0ea5e9?style=flat-square)
@@ -33,7 +33,8 @@
 | **🎨 [personal-ip-builder](./personal-ip-builder/README.md)** | 照片、参考图或纯文字 → **多画风锁定 `master` 后出数字资产卡**，打包三模式配图 Skill | 做个人 IP 真源 / 配图 skill | [→ README](./personal-ip-builder/README.md) |
 | **✍️ [chasen-x-writing](./chasen-x-writing/README.md)** | 把口播/思路写成 **Chasen 口吻的 𝕏 帖**；先说人话、读者一遍看懂，去 AI 味有数据支撑；口播观点默认不套爆款公式 | 写 𝕏 / 改稿 | [→ README](./chasen-x-writing/README.md) |
 | **🖌️ [chasen-ip-tutorial-illustrations](./chasen-ip-tutorial-illustrations/README.md)** | 内置 Chasen 角色素材，**教程 / 信息图 / 封面** 三种模式；画幅由出图时指定 | 教程作者 / AI Builder | [→ README](./chasen-ip-tutorial-illustrations/README.md) |
-| **🚦 [cli-dispatch](./cli-dispatch/README.md)** | **无 `pi-task` 的原生 `pi -p` 极简派活方案**：Bot 只拆任务与验收，后台直接跑本机 `pi -p` | 单 Bot / 无 `pi-task` 环境 | [→ README](./cli-dispatch/README.md) |
+| **🚦 [cli-dispatch](./cli-dispatch/README.md)** | **共用电脑 `pi-task` 派活与同轮验收**：平台要求优先、`--owner` 隔离、同回合阻塞等待验收 `ack`，webhook 仅兜底 | 共用主机派活给 Pi 的 Bot | [→ README](./cli-dispatch/README.md) |
+| **📝 [chasen-skill-capture](./chasen-skill-capture/README.md)** | **可复用多步流程沉淀与仓库同步规矩**：当场写共享 Skill、按仓规开 PR 同步（不把 push 交 Pi、未成不谎报）、新 Bot 找现行 Eggbot | 沉淀团队复用流程时 | [→ README](./chasen-skill-capture/README.md) |
 | **🔧 [grokbot-pi-setup](./grokbot-pi-setup/README.md)** | 教 Grok Bot **装 Pi + 接任意模型 + 配跑完自动唤醒**，端到端验收 | 第一次让 Bot 派活给 Pi | [→ README](./grokbot-pi-setup/README.md) |
 | **🚚 [grokbot-pi-dispatch](./grokbot-pi-dispatch/README.md)** | **基于 `pi-task` 的队列派活与自动唤醒**：任务书五件事 → `--owner` 后台跑 → webhook 叫醒 → 验收 `ack` | 已装 `pi-task` 的 Grok Bot | [→ README](./grokbot-pi-dispatch/README.md) |
 
@@ -57,6 +58,7 @@ npx skills add Chasen-Liao/Chasen-Skills --skill personal-ip-builder --global --
 npx skills add Chasen-Liao/Chasen-Skills --skill chasen-x-writing --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill chasen-ip-tutorial-illustrations --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
+npx skills add Chasen-Liao/Chasen-Skills --skill chasen-skill-capture --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill grokbot-pi-setup --global --yes
 npx skills add Chasen-Liao/Chasen-Skills --skill grokbot-pi-dispatch --global --yes
 ```
@@ -81,7 +83,8 @@ npx skills add Chasen-Liao/Chasen-Skills --skill x-analytics --global --yes
 | `personal-ip-builder` | `打造个人IP` / `做角色设定卡` / `数字资产卡` / `/personal-ip-builder` |
 | `chasen-x-writing` | `把这段口播写成帖` / `按我的口吻改这篇` / `$chasen-x-writing` |
 | `chasen-ip-tutorial-illustrations` | `用 Chasen 解释这个工作流` / `信息图` / `做封面` / `$chasen-ip-tutorial-illustrations` |
-| `cli-dispatch` | `用 pi -p 派活` / `按 cli-dispatch 派活`（无 `pi-task` 时） |
+| `cli-dispatch` | 平台允许的共用电脑多步编码/文件/批处理任务自动启用，或 `按 cli-dispatch 派活` |
+| `chasen-skill-capture` | 教完可复用多步工作 / `记住这个流程` / `写成 skill` / 同类活第二次出现时自动触发 |
 | `grokbot-pi-setup` | `帮我配好 Pi 派活` / `按 grokbot-pi-setup 装一下` |
 | `grokbot-pi-dispatch` | 已装 `pi-task` 时超过两三步的执行活自动读 / `用 pi-task 派活` / `按 grokbot-pi-dispatch 派活` |
 
@@ -126,7 +129,11 @@ Chasen-Skills/
 │   ├── README.md
 │   └── assets/chasen-ip/
 │
-├── cli-dispatch/                # 无 pi-task 时的原生 pi -p 极简派活
+├── cli-dispatch/                # 共用电脑 pi-task 派活、同轮等待验收与 ack
+│   ├── SKILL.md
+│   └── README.md
+│
+├── chasen-skill-capture/        # 可复用流程沉淀与技能仓库同步规矩
 │   ├── SKILL.md
 │   └── README.md
 │

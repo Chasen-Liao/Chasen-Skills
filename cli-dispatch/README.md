@@ -1,29 +1,30 @@
 # 🚦 cli-dispatch
 
-> **无 `pi-task` 时的原生 `pi -p` 极简派活方案** — 零包装脚本、零额外队列依赖，Bot 只拆任务和验收，重活直接后台跑本机 `pi -p`。
+> **共用电脑 `pi-task` 派活与同轮验收** — Bot 写五要素任务，用 `~/tools/pi-call/pi-task run <工作目录> '<任务>' --owner <当前Bot-ID>` 派给共用电脑上的 Pi；派完保持同一执行回合阻塞等待，亲自验收产物后才 `ack`，通知只作兜底。不要自行 `nohup` 或后台化。
 
 <p>
 
-![Executor](https://img.shields.io/badge/Executor-pi_--p-0ea5e9?style=flat-square)
-![Mode](https://img.shields.io/badge/Mode-Zero_Wrapper-10b981?style=flat-square)
-![Version](https://img.shields.io/badge/version-0.6.0-7c3aed?style=flat-square)
+![Executor](https://img.shields.io/badge/Executor-pi--task-0ea5e9?style=flat-square)
+![Isolation](https://img.shields.io/badge/Isolation-owner_·_same--turn_ack-10b981?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.7.0-7c3aed?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-64748b?style=flat-square)
 
 </p>
 
-> 💡 若你已按 [grokbot-pi-setup](../grokbot-pi-setup/README.md) 部署了 `pi-task`（需要 `--owner` 隔离、任务 ID 与 `pending/ack` 队列），请使用 [grokbot-pi-dispatch](../grokbot-pi-dispatch/README.md)。
+> 💡 **范围说明**：这里的「本机」指所有 Bot 共用的主机，**不是** Chasen 注册的 Windows 电脑。平台规定的执行方式、后台任务、仓库/桌面边界、安全与审批要求始终优先。
 
 ---
 
-## ✨ 能做什么
+## ✨ 核心约束
 
-| 能力 | 说明 |
+| 维度 | 规范 |
 | :--- | :--- |
-| **🧠 Bot 减负** | 远端 Bot 只负责拆解、写五要素任务书、派活与验收 |
-| **⚡ 零脚本依赖** | 只需本机有原生 `pi`，直接调用 `pi -p` 无头模式，无需安装额外队列工具 |
-| **🔔 退出即唤醒** | Bot 通过后台 Shell 调起 `pi -p`，进程退出自动唤醒（可选拼一句 `curl` webhook） |
-| **👀 轻量查进度** | `--mode json` 输出结构化日志，需要时 `rg` 一行查最近工具与 `agent_end` |
-| **✅ 安全与验收** | 禁删/禁发/禁付/禁 push，Bot 亲自查产物与 `git diff`，不合格最多重派两次 |
+| **🛡️ 平台要求优先** | 平台执行方式、仓库/桌面边界、安全与审批优先；不绕过、不自动放行 `needs_approval` |
+| **🏷️ `--owner` 隔离** | `run / reply / approve / deny / pending / ack` 均带当前 Bot 的 agent ID，只处理自己的任务 |
+| **⏳ 同回合阻塞等待** | Shell 正常启动（不自行 `nohup` / `&`），用长时间 `AwaitShell` 等到结束并验收后才 `ack` |
+| **🔔 Webhook 仅兜底** | 通知只作兜底，不替代同轮等待；任务目录 `~/.pi/tasks/<ID>/` 的状态才是事实 |
+| **🚫 高危禁派与保密** | 删除、发送、付款、发帖、`git push` 不交给 Pi；不读不打印密钥、`auth.json` 或 secrets |
+| **🧾 诚实与精简回报** | 亲自验收产物/diff/测试后回报结论、证据与产物路径；默认不报内部任务 ID，不作零费用承诺 |
 
 ---
 
@@ -33,44 +34,46 @@
 npx skills add Chasen-Liao/Chasen-Skills --skill cli-dispatch --global --yes
 ```
 
-**前置条件**：本机已安装 [Pi](https://pi.dev) 并配好至少一个可用模型（运行 `pi --list-models` 确认），且 Bot 具备后台执行 Shell 的能力。
-
-冒烟验证：
-
-```bash
-mkdir -p ~/.pi-dispatch/logs
-pi -p '在 /tmp/pi-smoke.txt 写入 ok' --provider <provider> --model <model> \
-  --thinking medium --no-session --mode json > ~/.pi-dispatch/logs/smoke.jsonl 2>&1
-```
+**前置条件**：
+- 共用主机已安装 Pi 与 GAP（`grokbot-and-pi`）脚本 `~/tools/pi-call/pi-task`。
+- 默认走 `zenmux/deepseek/deepseek-v4.1-flash`（`--thinking low`，支持 `low/high`），不经 Tailscale，不做 Magpie 预检；仅显式 `--model magpie/...` 时才走云悠 VPS Magpie + Tailscale（自动执行 `pi-preflight`）。
+- Bot 具备 Shell 与阻塞等待（`AwaitShell`）工具。
 
 ---
 
 ## 🗣️ 怎么用
 
-对 Bot 说：
+遇到平台允许本地执行的多步编码、文件或批处理任务时触发（或直接说 `按 cli-dispatch 派活`）。
 
-> `用 pi -p 派活` / `按 cli-dispatch 派活：<任务描述>`
+标准执行闭环：先查待验收队列 → 写五要素任务书（目标、绝对产物路径、完成标准、最小可改目录与禁令、单次自查收尾）→ 同回合启动并等待 → 亲自验收 → `ack`。
 
-Bot 会按五要素（目标、产物绝对路径、完成标准、边界、单次自查收尾）内联拼出任务书，后台拉起 `pi -p` 后立即结束当前轮；被唤醒后检查产物与 `git diff` 再向你汇报。
+```bash
+# 1. 若本轮已有派发记录，先看待验收队列
+~/tools/pi-call/pi-task pending --owner <当前Bot-ID>
 
-| 常用参数 / 检查 | 用法 |
+# 2. 派发任务（不加 nohup / &，随后用 AwaitShell 同回合等待）
+~/tools/pi-call/pi-task run <工作目录> '<任务>' --session <短名> --owner <当前Bot-ID> --timeout 1800
+```
+
+| 常用参数 / 场景 | 用法 |
 | :--- | :--- |
-| 难活升级推理 | 加 `--thinking high`（默认 `medium`） |
-| 只读侦察/扫盘 | 加 `--tools read,ls,grep,find` |
-| 查看最近调用工具 | `rg -o '"toolName":"\w+"' <日志> \| tail -5` |
-| 确认任务是否结束 | `rg -q '"type":"agent_end"' <日志>` |
+| 复杂任务升级思考 | 加 `--thinking high`（默认 `low`，仅支持 `low/high`） |
+| 纯只读且不写报告 | 加 `--no-write` |
+| 无需联网 | 加 `--no-web` |
+| 验收未过原会话修正 | `pi-task reply <ID> '<缺口说明>' --owner <当前Bot-ID>`（最多两次） |
+| 验收通过确认销账 | `pi-task ack <ID> --owner <当前Bot-ID>` |
 
 ---
 
 ## 📋 输出示例
 
-Bot 被唤醒并验收通过后向用户汇报：
+同回合验收通过并完成 `ack` 后向用户汇报（默认不附内部任务 ID，仅在排障或用户追问时提供）：
 
 ```text
-已完成派活任务 `fix-auth-guard`：
-- 结论：已修复空 token 校验边界并补齐 2 条单元测试（pytest 全部通过）。
-- 验收：`git diff` 仅改动目标模块，无越界写入或删除。
-- 产物：/workspace/project/src/auth.py、/workspace/project/tests/test_auth.py
+已完成权限校验修复并验收通过：
+- 结论：已修复空 token 边界判断并补齐 2 条回归用例。
+- 验收证据：已核对 result.md 与 git diff，仅改动目标目录；pytest 12/12 全部通过。
+- 产物路径：/workspace/project/src/auth.py、/workspace/project/tests/test_auth.py
 ```
 
 ---
@@ -79,7 +82,7 @@ Bot 被唤醒并验收通过后向用户汇报：
 
 ```text
 cli-dispatch/
-├── SKILL.md    # Agent 执行契约（含内联五要素任务模板）
+├── SKILL.md    # Agent 执行契约（完整规则与排障/审批流程）
 └── README.md   # 本文件
 ```
 
