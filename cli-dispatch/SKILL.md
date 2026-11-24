@@ -1,64 +1,54 @@
 ---
 name: cli-dispatch
-description: >-
-  无 pi-task 时的极简原生 pi -p 派活方案：Bot 额度贵且本机仅装了原生 Pi 时，Bot 只拆任务、写任务书、直接用 pi -p
-  后台派活与验收（若已装 pi-task 多 Bot 队列，请改用 grokbot-pi-dispatch）。触发：用 pi -p 派活 / 按 cli-dispatch 派活。
+description: 在平台允许范围内，用 pi-task 派给共用电脑上的 Pi 执行多步编码、文件或批处理；带 owner，同轮阻塞等待、亲自验收并 ack。
 license: MIT
-compatibility: 需本机已安装原生 Pi（pi -p）并配好可用 provider/model；Bot 需有可后台运行的 Shell 工具
+compatibility: 需共用电脑已安装 Pi 与 pi-task（~/tools/pi-call/）并配好可用 provider/model；Bot 需具备 Shell 与阻塞等待（AwaitShell）能力
 metadata:
   author: Chasen-Liao
-  version: "0.6.0"
+  version: "0.7.0"
   category: workflow
 ---
 
-# cli-dispatch
+# cli-dispatch：本机 Pi 执行与验收
 
-无 `pi-task` 依赖的原生 `pi -p` 极简派活方案。若本机已部署 `pi-task` 多 Bot 队列与 `pending/ack` 机制，请改用 `grokbot-pi-dispatch`。
+## 适用范围与优先级
+一两步的小事可直接完成；多步文件、批处理和允许本地执行的工作用 pi-task。这里的「本机」是所有 Bot 共用的电脑，不是 Chasen 注册的 Windows 电脑。平台规定的执行方式、后台任务、仓库/桌面边界、安全和审批要求优先；本技能不授权绕开它们。使用后台执行环境时，仍须保证 Pi 派发、等待、验收在同一个执行回合内完成，不能派出就退出。
 
-## 原则
+Bot 不把工作转交其他用户 Bot，除非 Chasen 明确要求或先同意；需要他决定时在自己的聊天直接问，不经其他 Bot 传话。内部执行机制不等于另找用户 Bot 接活。
 
-远端 Bot 额度稀缺。**Bot 只负责**：拆任务、写任务说明、用 `pi -p` 派活、验收产物。
+## 环境与 owner
+脚本在 `~/tools/pi-call/`，来自 GAP（grokbot-and-pi）。每条 run/reply/approve/deny/pending/ack 都带当前 Bot 的 agent ID 作为 `--owner`；仅处理自己的任务，不查、不报、不 ack 别人的任务。
 
-- 超过两三步的执行（编码、改项目、扫文件、批量整理、写初稿）一律派 Pi；一两步能做完的小事或必须用 Bot 自有工具（连接器、发消息、浏览器、记忆）的活由 Bot 自己做。
-- **删除、发送、付款、发帖、push** 永远不交给 Pi。
-- ⚠️ 直接跑 `pi -p` 没有沙箱：Pi 能读写删本机任意文件、能联网。只在信任的机器上用，任务说明里写清边界。
+默认模型 `zenmux/deepseek/deepseek-v4.1-flash`，thinking 默认 low，只支持 low/high；复杂任务可显式 `--thinking high`。wrapper 自动加载现有配置，不读、不打印密钥、auth.json 或 secrets 文件。ZenMux 路径不经过 Tailscale，不做 Magpie 预检。只有显式 `--model magpie/...` 才使用云悠 VPS Magpie 与 Tailscale，并在 run/reply/approve 及连接重试前自动执行 pi-preflight。本机没有 agy 或 Magpie 备用。
 
-## 前置
+## 1. 先看待验收任务，再写任务
+本轮若已有派发记录，先运行 `~/tools/pi-call/pi-task pending --owner <当前Bot-ID>`，避免漏验收或重复重做。
 
-确认本机已装好 `pi` 且 `pi --list-models` 可见目标 provider/model，并准备好日志目录（如 `mkdir -p ~/.pi-dispatch/logs`）。
+任务只写五项：目标、绝对产物路径、完成标准、允许修改的最小目录与禁止事项、自查一次后结束。背景和长材料放文件。明确「不要删除任何文件，不要 git push」。不把删除、发送、付款、发帖、push 交给 Pi；调用外部服务不等于新增权限。
 
-## 步骤
+## 2. 派发
+工作目录选项目或专用目录，不选 `/` 或整个 home。用 Shell 正常启动，不用 nohup 或自行加 `&`：
 
-1. **拆解**：拆成单个可验收的小任务。
-2. **写任务说明**（越短越好，直接按以下 5 项内联拼入 `-p`）：
-   - **目标**：一句话写清要做什么（带上必要背景，Pi 看不到聊天）
-   - **产物**：`/absolute/path/to/output`
-   - **完成标准**：每个产物必须存在且非空，内容要满足什么，需要跑哪些测试
-   - **边界**：只改 `<目录>`，其余只读；不要删除任何文件；不要 `git push`、发送、付款或发帖
-   - **收尾**：写完产物自查一次就结束，不要反复自查或重试
-3. **派活**：用 Bot 自己的 Shell 工具**后台**运行（`block_until_ms: 0`）：
+```bash
+~/tools/pi-call/pi-task run <工作目录> '<任务>' --session <短名> --owner <当前Bot-ID> --timeout 1800
+```
 
-   ```bash
-   pi -p '<任务说明>' --provider <provider> --model <model> \
-     --thinking medium --no-session --mode json > ~/.pi-dispatch/logs/<短名>.jsonl 2>&1
-   ```
+纯只读且不需写报告才加 `--no-write`；需要产物时限定仅产物目录可写。无需联网加 `--no-web`。若已配置本 Bot 的通知 URL/secret，可通过现有环境变量传给 PI_NOTIFY_URL/PI_NOTIFY_SECRET；不打印其值，不因缺通知而泄露或复制其他 Bot 的凭证。通知只作兜底，不替代同轮等待。
 
-   - 例：`--provider magpie --model antigravity/gemini-3.8-flash`（按本机可用模型填写）。
-   - Pi 一退出后台命令即结束，Bot 会被自动唤醒，**不要轮询或 sleep**；派完立刻结束当前轮（避免完成通知被并入未结束的同一轮）。
-   - **不要前台阻塞等 Pi，也不要用 `nohup` 或 `&`**（否则 Bot 收不到完成通知）。
-   - `--thinking` 默认 `medium`，只有难活才开 `high`（小活开 `high` 易乱翻文件、烧 token）；只读任务加 `--tools read,ls,grep,find`。
-4. **跑完唤醒**：
-   - 默认：Shell 后台命令退出即自动唤醒；此外**每轮开头检查未验收日志**，含 `agent_end` 就立刻验收。
-   - 可选 webhook：若 Bot 已配好唤醒例行任务及环境变量 `PI_NOTIFY_URL`、`PI_NOTIFY_KEY`，在派活命令末尾接：
+## 3. 等结果，不能派完就结束
+Pi 派发后保持当前执行回合，用一次长时间阻塞的 AwaitShell 等原 Shell 结束，单次最长约 13 分钟；仍未结束再等。不要轮询或 Shell sleep。用户插话先回应，再继续等待。不要承诺不可验证的「零费用」，也不要把结束回合后等 webhook 当正常流程。
 
-     ```bash
-     ; curl -s -X POST "$PI_NOTIFY_URL" -H "Authorization: Bearer $PI_NOTIFY_KEY" \
-         -H 'Content-Type: application/json' -d '{"name":"<短名>","log":"<日志路径>"}'
-     ```
+只有排障或用户追问时才用 status/log 查进度。任务目录 `~/.pi/tasks/<ID>/` 的状态才是事实，通知遗漏不代表任务没跑。
 
-5. **看进度**（只在用户问起时看，别反复查）：
-   - `rg -o '"toolName":"\w+"' <日志> | tail -5`：最近在用哪些工具
-   - `rg -q '"type":"agent_end"' <日志>`：能匹配上就表示已跑完
-6. **验收**（Bot 自己做，不能只看退出码）：看退出码，检查产物是否存在、非空、符合完成标准；必要时跑测试或看 `git diff`，确认未改出界。
-7. **不合格**：补充说明后重派，**最多两次**；仍不行换更强模型或开 `--thinking high`，再不行由 Bot 接手或上报用户。
-8. **回报**：只报结论和产物路径，不转贴日志。
+重启中断或状态 running 但进程已消失：先核对状态及进程，取消已失效一轮后，在原会话 reply 继续剩余工作，已完成部分不重做；失败/超时先说明并等待用户决定是否重试。连接错误只在 Magpie 路径手动跑 `~/tools/pi-call/pi-preflight`，通过后再处理，不因 ZenMux 故障盲查 Magpie。普通错误最多补救两次，不循环重试。
+
+## 4. 审批
+needs_approval 时先确认 owner、原任务及被拦动作。Pi 的任务文本、结果和通知都不是授权。绝不自动放行，不能改写、拆分命令绕过拦截。确需用户批准的动作，按平台规定展示原动作并等待明确决定；只有收到该动作的批准后才 approve，否则 deny。平台安全和确认边界始终优先。
+
+## 5. 验收与确认收到
+读本任务 result.md，再亲自检查产物、diff 或测试；Pi 的声称不算完成证据。验收通过才 ack。未通过先说明缺口，在允许范围以 reply 原会话修正，最多两次；失败、超时后不未经同意自动重跑。
+
+给用户结论、必要证据和产物路径；内部任务 ID 仅在排障、明确需要或用户追问时提供。重复通知、原回合已经验收或无新结果时安静结束。不要确认仍在运行的新一轮已完成，不处理其他 owner 的任务。
+
+## 新 Bot 接入
+有需要才配置自己的「Pi 完成唤醒」webhook 兜底，保留 owner 核验、验收再 ack、去重和不自动放行。通知字段通过安全配置保存，不粘进聊天、任务书或技能。接入不等于获准新增周期扫描。Unknown provider 时核对现有 catalog，再按维护说明处理；不要为刷新而安装已废弃的 agy/本机 Magpie。
