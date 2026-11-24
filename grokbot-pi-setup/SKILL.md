@@ -8,7 +8,7 @@ license: MIT
 compatibility: 需 Linux/macOS Shell、Node 22+、可联网安装 Pi 与 robbin/grokbot-local-agent（pi-task）；Bot 需支持密钥输入与 webhook 例行任务
 metadata:
   author: Chasen-Liao
-  version: "0.2.0"
+  version: "0.2.1"
   category: workflow
 ---
 
@@ -36,15 +36,15 @@ pi -p 'reply ok' --provider <provider> --model <model> --no-session
 
 ## 3. 装 pi-task 并配「跑完自动叫醒」
 
-使用 [robbin/grokbot-local-agent](https://github.com/robbin/grokbot-local-agent) 脚本（需 Node 22+，下文 `~/tools/pi-call` 为默认安装路径示例）：
+使用 [robbin/grokbot-local-agent](https://github.com/robbin/grokbot-local-agent) 脚本（需 Node 22+，下文 `<pi-task-dir>` 可按部署习惯设为如 `~/tools/pi-call`）：
 
 ```bash
 git clone https://github.com/robbin/grokbot-local-agent /tmp/gla
-mkdir -p ~/tools/pi-call && cp -a /tmp/gla/bin/. ~/tools/pi-call/ && chmod +x ~/tools/pi-call/*
+mkdir -p <pi-task-dir> && cp -a /tmp/gla/bin/. <pi-task-dir>/ && chmod +x <pi-task-dir>/*
 ```
 
-`pi-task` 默认使用 `deepseek/deepseek-flash`、`thinking high`，换模型在派活时传 `--model <provider/model>`。
-冒烟验证：跑通 `PI_NOTIFY_OFF=1 ~/tools/pi-call/pi-task run /tmp 'Reply with only OK' --session smoke --owner <ID>`，确认输出 `STATE done` 后执行 `pi-task ack <TASK> --owner <ID>`。
+派活时按你实际配置的模型传 `--model <provider/model>`（上游脚本内置默认模型见其仓库文档）。
+冒烟验证：跑通 `PI_NOTIFY_OFF=1 <pi-task-dir>/pi-task run /tmp 'Reply with only OK' --session smoke --owner <ID>`，确认输出 `STATE done` 后执行 `pi-task ack <TASK> --owner <ID>`。
 
 配置自动唤醒：
 1. Bot 创建 webhook 触发的例行任务（如「Pi 完成唤醒」），逻辑参考仓库 `routines/pi-task-notify.md`：唤醒后运行 `pi-task pending --owner <ID>`，按 `grokbot-pi-dispatch` 的验收与 `ack` 流程处理并回报，不碰其他 Bot 的任务。

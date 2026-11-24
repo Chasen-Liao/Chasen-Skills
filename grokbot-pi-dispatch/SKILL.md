@@ -1,27 +1,27 @@
 ---
 name: grokbot-pi-dispatch
 description: >-
-  基于 pi-task 的 Grok Bot 队列派活与自动唤醒：超过两三步的执行活（写代码、改文件、扫目录、整理或生成内容）开干前读此 skill；
+  基于 pi-task 的 Grok Bot 异步队列派活与 webhook 自动唤醒：超过两三步的执行活（写代码、改文件、扫目录、整理或生成内容）开干前读此 skill；
   Bot 写五要素任务书、用 pi-task 后台派给本机 Pi、被 webhook 叫醒后验收并 ack。还没装好先看 grokbot-pi-setup；
-  无 pi-task 环境改用 cli-dispatch。触发：用 pi-task 派活 / 按 grokbot-pi-dispatch 派活。
+  需要同执行回合阻塞等待（webhook 仅兜底）时请使用 cli-dispatch。触发：用 pi-task 派活 / 按 grokbot-pi-dispatch 派活。
 license: MIT
 compatibility: 需已完成 grokbot-pi-setup（本机已装 Pi、pi-task 及 webhook 唤醒）；Bot 需有可后台运行的 Shell 工具
 metadata:
   author: Chasen-Liao
-  version: "0.2.0"
+  version: "0.2.1"
   category: workflow
 ---
 
 # grokbot-pi-dispatch：基于 pi-task 的队列派活与自动唤醒
 
 Bot 只做三件事：写任务书、用 `pi-task` 后台派给 Pi、验收并 `ack`。一两步的小事 Bot 自己做，别派。
-`pi-task` 来自 [robbin/grokbot-local-agent](https://github.com/robbin/grokbot-local-agent)，为每个任务维护独立 ID、状态目录与 `--owner` 归属，防止漏报或跨 Bot 串台。
+`pi-task` 来自 [robbin/grokbot-local-agent](https://github.com/robbin/grokbot-local-agent)，为每个任务维护独立 ID、状态目录与 `--owner` 归属，防止漏报或跨 Bot 串台。若你的平台要求同执行回合阻塞等待（webhook 仅兜底），请优先使用 `cli-dispatch`。
 
-> 下文涉及的 `~/tools/pi-call/pi-task`、`~/.pi/tasks/<ID>/`、`~/.pi/agent/auth.json` 及 `/home/box/agent-data/agents/<ID>/profile.json` 均为默认部署路径示例，实际按本机安装路径使用。
+> 下文涉及的 `<pi-task-dir>/pi-task`、`~/.pi/tasks/<ID>/`、`~/.pi/agent/auth.json` 及 `<agent-data-dir>/agents/<ID>/profile.json` 均为默认部署路径占位符，实际按本机安装路径使用。
 
 ## 0. 确定 owner ID
 
-以当前 Bot 的 agent ID 作为 `--owner <ID>`（标准 Grok Bot 部署中通常对应默认路径 `/home/box/agent-data/agents/<ID>/profile.json` 的目录名）。派活、`pending`、`ack` 均须携带 `--owner <ID>`。
+以当前 Bot 的 agent ID 作为 `--owner <ID>`（通常对应部署目录 `<agent-data-dir>/agents/<ID>/profile.json` 的目录名）。派活、`pending`、`ack` 均须携带 `--owner <ID>`。
 
 ## 1. 写任务书（越短越好）
 
@@ -38,7 +38,7 @@ Bot 只做三件事：写任务书、用 `pi-task` 后台派给 Pi、验收并 `
 
 ```bash
 PI_NOTIFY_URL="$<BOT>_PI_NOTIFY_URL" PI_NOTIFY_SECRET="$<BOT>_PI_NOTIFY_KEY" \
-  ~/tools/pi-call/pi-task run <工作目录> '<任务书>' \
+  <pi-task-dir>/pi-task run <工作目录> '<任务书>' \
   --session <短名> --owner <ID> --model <provider/model> --thinking medium --timeout 1800
 ```
 

@@ -11,7 +11,7 @@
 
 </p>
 
-> 💡 若未使用 `pi-task`（仅需单 Bot 极简调用原生 `pi -p`），请看 [cli-dispatch](../cli-dispatch/README.md)。
+> 💡 若需要同执行回合阻塞等待、平台审批优先且 webhook 仅作兜底，请看 [cli-dispatch](../cli-dispatch/README.md)。
 
 ---
 

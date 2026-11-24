@@ -56,10 +56,10 @@ Agent 会自动调用 `scripts/x-analyze.py` 并把报告总结给你；若想�
 
 ```bash
 # 最简 — 自动识别赛道、自动选输出目录
-python x-analytics/scripts/x-analyze.py "./account_analytics_content_2026-08-21_2026-08-27.csv" --out ./x-reports --yes
+python x-analytics/scripts/x-analyze.py "./account_analytics_content_YYYY-MM-DD_YYYY-MM-DD.csv" --out ./x-reports --yes
 
 # 指定粉丝数与赛道，手册建议更准
-python x-analytics/scripts/x-analyze.py "./xxx.csv" --out ./x-reports --followers 2800 --niche AI --yes
+python x-analytics/scripts/x-analyze.py "./xxx.csv" --out ./x-reports --followers 1500 --niche AI --yes
 
 # 强制深度/轻量
 python x-analytics/scripts/x-analyze.py "./xxx.csv" --out ./x-reports --deep --yes

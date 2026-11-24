@@ -289,7 +289,7 @@ def main():
     niche = args.niche
     if followers is None and not args.yes:
         try:
-            ans = input("你现在多少粉？如 2800 (回车默认 0): ").strip()
+            ans = input("你现在多少粉？如 1500 (回车默认 0): ").strip()
             followers = int(ans) if ans else 0
         except Exception:
             followers = 0

@@ -53,7 +53,7 @@ Bot 会按 `1 → 4` 顺序逐步执行并验收（涉及登录、付款、删�
 ```text
 Pi 派活环境已就绪：
 - Pi & 模型：`pi --version` 正常；`--provider <provider> --model <model>` 冒烟返回 ok。
-- pi-task：`~/tools/pi-call/pi-task` 冒烟 STATE done；多 Bot 密钥 `<BOT>_PI_NOTIFY_URL/KEY` 已安全保存。
+- pi-task：`<pi-task-dir>/pi-task` 冒烟 STATE done；多 Bot 密钥 `<BOT>_PI_NOTIFY_URL/KEY` 已安全保存。
 - 端到端测试：测试任务已触发 webhook 唤醒，/tmp/pi-test.txt 内容核对无误，ack 后 pending 已清空。
 ```
 
